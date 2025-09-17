@@ -18,8 +18,8 @@ const ArEchoManagementPage = () => {
     ];
 
     const echoData = [
-        { id: 1, type: '텍스트', status: '활성', content: '여기서 친구들과 맛있는 한식을 먹었어요! 정말 좋은 추억이네요 😊', location: '광화문광장', author: '김민수', timestamp: '2024-01-15 14:30', likes: 23, views: 156 },
-        { id: 2, type: '이미지', status: '활성', reportCount: 1, content: '[이미지] 덕수궁의 아름다운 석조전', location: '덕수궁', author: '이서영', timestamp: '2024-01-15 13:45', likes: 45, views: 289, comments: 1 },
+        { id: 1, type: '텍스트' as const, status: '활성' as const, content: '여기서 친구들과 맛있는 한식을 먹었어요! 정말 좋은 추억이네요 😊', location: '광화문광장', author: '김민수', timestamp: '2024-01-15 14:30', likes: 23, views: 156 },
+        { id: 2, type: '이미지' as const, status: '활성' as const, reportCount: 1, content: '[이미지] 덕수궁의 아름다운 석조전', location: '덕수궁', author: '이서영', timestamp: '2024-01-15 13:45', likes: 45, views: 289, comments: 1 },
     ];
 
     const districtData = [
@@ -52,7 +52,7 @@ const ArEchoManagementPage = () => {
             {view === 'list' ? (
                 <div className="space-y-4">
                     <h3 className="text-xl font-bold text-gray-800">메아리 목록 ({echoData.length}개)</h3>
-                    {echoData.map((data, index) => (
+                    {echoData.map((data) => (
                         <ArEchoCard key={data.id} {...data} />
                     ))}
                 </div>

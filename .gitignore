@@ -1,10 +1,13 @@
+# lockfiles
+package-lock.json
+
+# build output
+/dist
+
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
-
-# Vite build output
-/dist
 
 # Local env files
 .env.local
