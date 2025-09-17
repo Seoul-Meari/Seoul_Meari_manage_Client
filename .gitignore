@@ -32,8 +32,3 @@ lerna-debug.log*
 # OS generated files
 .DS_Store
 Thumbs.db
-
-# Optional: lockfiles (프로젝트 정책에 따라)
-/package-lock.json
-/yarn.lock
-/pnpm-lock.yaml
