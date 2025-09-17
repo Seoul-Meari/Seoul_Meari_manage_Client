@@ -1,7 +1,5 @@
 import { NavLink } from 'react-router-dom';
 import { useUiStore } from '../../store/uiStore';
-import userIcon from '@/assets/user.png';
-import manageIcon from '@/assets/manage.png';
 
 const Sidebar = () => {
   const { isSidebarOpen, toggleSidebar } = useUiStore();
