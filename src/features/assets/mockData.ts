@@ -1,6 +1,6 @@
+// src/features/assets/mockData.ts
 import { AssetRow } from '../urban-issue/types';
 
-// src/features/assets/mockData.ts
 export const MOCK_ASSETS: AssetRow[] = [
   {
     id: "a-001",
@@ -13,7 +13,7 @@ export const MOCK_ASSETS: AssetRow[] = [
     status: "published",
     usage: "historical",
     tags: ["palace", "main-hall", "lod2"],
-    locations: 7,
+    location: { lat: 37.5796, lon: 126.9770 },
   },
   {
     id: "a-002",
@@ -26,7 +26,7 @@ export const MOCK_ASSETS: AssetRow[] = [
     status: "published",
     usage: "both",
     tags: ["water", "reflection", "lod1"],
-    locations: 5,
+    location: { lat: 37.5789, lon: 126.9768 },
   },
   {
     id: "a-003",
@@ -39,7 +39,7 @@ export const MOCK_ASSETS: AssetRow[] = [
     status: "draft",
     usage: "promo",
     tags: ["brand", "event"],
-    locations: 0,
+    location: { lat: 37.4979, lon: 127.0276 }, // 강남역
   },
   {
     id: "a-004",
@@ -52,7 +52,7 @@ export const MOCK_ASSETS: AssetRow[] = [
     status: "published",
     usage: "historical",
     tags: ["wall", "tile", "lod2"],
-    locations: 12,
+    location: { lat: 37.5805, lon: 126.9765 },
   },
   {
     id: "a-005",
@@ -65,6 +65,6 @@ export const MOCK_ASSETS: AssetRow[] = [
     status: "archived",
     usage: "promo",
     tags: ["kiosk", "demo"],
-    locations: 0,
+    location: { lat: 37.5121, lon: 127.0589 }, // 코엑스
   },
 ];

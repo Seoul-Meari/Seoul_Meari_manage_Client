@@ -1,9 +1,5 @@
 // src/features/assets/pages/VRContentsPage.tsx
 import React, { useState } from 'react';
-
-// 타입, 데이터, 하위 컴포넌트 import
-
-// 가정: 다른 피처나 공용 컴포넌트들이 이 경로에 있다고 가정합니다.
 import AiStatCard from '@/features/ai-diagnosis/components/AiStatCard';
 import { AssetRow, AssetStatus, AssetUsage } from '@/features/urban-issue/types';
 import { MOCK_ASSETS } from '@/features/assets/mockData';

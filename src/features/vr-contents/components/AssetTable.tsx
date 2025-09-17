@@ -106,7 +106,15 @@ const AssetTable: React.FC<AssetTableProps> = ({
                 <Td className="text-right tabular-nums">{asset.sizeMB.toFixed(1)}</Td>
                 <Td><UsageBadge usage={asset.usage} /></Td>
                 <Td><StatusBadge status={asset.status} /></Td>
-                <Td className="tabular-nums">{asset.locations}</Td>
+                <Td>
+                  <div className="text-xs tabular-nums">
+                    <span className="text-gray-500">Lat: </span>
+                    <span>{asset.location.lat.toFixed(4)}</span>
+                    <br />
+                    <span className="text-gray-500">Lon: </span>
+                    <span>{asset.location.lon.toFixed(4)}</span>
+                  </div>
+                </Td>
                 <Td>
                   <div className="flex items-center gap-2">
                     <IconButton title="미리보기" onClick={() => onPreview(asset)}><EyeIcon /></IconButton>
