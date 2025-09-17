@@ -18,6 +18,7 @@ const Sidebar = () => {
     {
       title: '관리',
       links: [
+        { name: 'VR 콘텐츠 관리', path: '/vr-contents', icon: <VrIcon /> },
         { name: '사용자 관리', path: '/users', icon: <UsersIcon /> },
         { name: '관리자 계정 설정', path: '/admin', icon: <WrenchScrewdriverIcon /> },
       ],
@@ -119,6 +120,14 @@ const MenuAlt1Icon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h8m-8 6h16" />
     </svg>
+);
+
+const VrIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="h-5 w-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 9h16a2 2 0 012 2v2a5 5 0 01-5 5h-2l-2-3-2 3H7a5 5 0 01-5-5v-2a2 2 0 012-2z" />
+    <circle cx="9" cy="13" r="1.5" fill="currentColor" />
+    <circle cx="15" cy="13" r="1.5" fill="currentColor" />
+  </svg>
 );
 
 
