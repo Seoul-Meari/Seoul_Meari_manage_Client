@@ -1,0 +1,13 @@
+services:
+  admin-client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: seoul_meari_admin_client
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
