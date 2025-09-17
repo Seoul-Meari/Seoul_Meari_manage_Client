@@ -1,39 +1,59 @@
 import { useMemo } from 'react';
-import { AssetRow, AssetStatus, AssetUsage } from '../types';
+import { AssetStatus, AssetUsage, AssetBundle } from '../types';
 
 /**
  * asset 목록을 받아 각종 필터링 및 정렬 로직을 적용하는 커스텀 훅
  */
-export const useFilteredAssets = (
-  assets: AssetRow[],
+/**
+ * AssetBundle 목록을 받아 각종 필터링 및 정렬 로직을 적용하는 커스텀 훅
+ * (기존 useFilteredAssets -> useFilteredBundles로 변경)
+ */
+export const useFilteredBundles = (
+  bundles: AssetBundle[],
   query: string,
   usage: AssetUsage | 'all',
   status: AssetStatus | 'all',
   sortBy: 'recent' | 'size' | 'name'
 ) => {
-  const filteredAssets = useMemo(() => {
-    // 1. 검색어(query) 필터링
-    let result = assets.filter((asset) =>
-      [asset.name, asset.bundleKey, asset.version, asset.category, asset.tags.join(" ")]
-        .join(" ")
-        .toLowerCase()
-        .includes(query.toLowerCase())
-    );
+  return useMemo(() => {
+    const lowerQuery = query.toLowerCase();
 
-    // 2. 용도(usage) 필터링
-    if (usage !== "all") {
-      result = result.filter((asset) => asset.usage === usage || asset.usage === 'both');
-    }
+    // 1. 필터링
+    let result = bundles.filter(bundle => {
+      // 용도(usage) 필터링
+      if (usage !== "all" && bundle.usage !== usage) {
+        return false;
+      }
+      
+      // 상태(status) 필터링
+      if (status !== "all" && bundle.status !== status) {
+        return false;
+      }
 
-    // 3. 상태(status) 필터링
-    if (status !== "all") {
-      result = result.filter((asset) => asset.status === status);
-    }
+      // 검색어(query) 필터링
+      if (lowerQuery) {
+        // 번들 자체의 정보 (이름, ID, 태그)에서 검색
+        const isInBundle = bundle.name.toLowerCase().includes(lowerQuery) ||
+                           bundle.bundleId.toLowerCase().includes(lowerQuery) ||
+                           bundle.tags.some(tag => tag.toLowerCase().includes(lowerQuery));
 
-    // 4. 정렬(sortBy)
+        // 번들 내부 프리팹들의 정보 (이름, 태그)에서 검색
+        const isInPrefabs = bundle.prefabs.some(prefab => 
+          prefab.name.toLowerCase().includes(lowerQuery) || 
+          prefab.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
+        );
+
+        // 둘 중 하나라도 해당되지 않으면 목록에서 제외
+        if (!isInBundle && !isInPrefabs) return false;
+      }
+      
+      return true;
+    });
+
+    // 2. 정렬
     switch (sortBy) {
       case "size":
-        result.sort((a, b) => b.sizeMB - a.sizeMB);
+        result.sort((a, b) => b.totalSizeMB - a.totalSizeMB);
         break;
       case "name":
         result.sort((a, b) => a.name.localeCompare(b.name, "ko"));
@@ -43,7 +63,5 @@ export const useFilteredAssets = (
         break;
     }
     return result;
-  }, [assets, query, usage, status, sortBy]);
-
-  return filteredAssets;
+  }, [bundles, query, usage, status, sortBy]);
 };
