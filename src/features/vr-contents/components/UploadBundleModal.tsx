@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
 import { AssetUsage } from '@/features/vr-contents/types';
 import { CloseIcon, UploadCloudIcon } from '@/components/common/Icon';
 import { Select } from '@/components/common/Select';
@@ -63,8 +64,7 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
 
   if (!isOpen) return null;
 
-  // --- Render ---
-  return (
+  const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" aria-modal="true" role="dialog">
       <div className="relative w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl">
         {/* Header */}
@@ -149,6 +149,9 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
       </div>
     </div>
   );
+
+  const modalRoot = document.getElementById('modal-root');
+  return modalRoot ? ReactDOM.createPortal(modalContent, modalRoot) : null;
 };
 
 export default UploadBundleModal;
