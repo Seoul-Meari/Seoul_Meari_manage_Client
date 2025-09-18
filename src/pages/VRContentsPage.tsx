@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import AiStatCard from '@/features/ai-diagnosis/components/AiStatCard';
 import { AssetBundle, AssetStatus, AssetUsage } from '@/features/vr-contents/types';
-import { MOCK_BUNDLES } from '@/features/assets/mockData';
 import { HistoricIcon, MegaphoneIcon, PackageIcon, SearchIcon, StorageIcon, UploadIcon } from '@/components/common/Icon';
 import { Select } from '@/components/common/Select';
 import BundleTable from '@/features/vr-contents/components/AssetTable';
 import UploadBundleModal from '@/features/vr-contents/components/UploadBundleModal';
 import { useFilteredBundles } from '@/features/vr-contents/hooks/useBundleHooks';
 import { useBundleStats } from '@/features/vr-contents/hooks/useAssetsStats';
+import { MOCK_BUNDLES } from '@/features/vr-contents/examples/mockData';
 
 const VRContentsPage: React.FC = () => {
   // --- States ---
@@ -34,11 +34,9 @@ const VRContentsPage: React.FC = () => {
 
   // --- Handlers ---
   const handleUploadBundle = () => setIsModalOpen(true);
-  // const handleUploadSubmit = (payload /*: BundleUploadPayload*/) => {
-  //   console.log("업로드할 데이터:", payload);
-  //   alert(`${payload.name} 번들 업로드를 시작합니다.`);
-  //   // TODO: API 호출 후, setBundles(...)를 통해 목록을 새로고침합니다.
-  // };
+  const handleUploadSubmit = () => {
+    setIsModalOpen(false);
+  };
   const handlePreviewBundle = (bundle: AssetBundle) => alert(`미리보기: ${bundle.name}`);
   const handleEditBundle = (bundle: AssetBundle) => alert(`메타 편집: ${bundle.name}`);
   const handleDeleteBundle = (bundle: AssetBundle) => alert(`삭제: ${bundle.name}`);
@@ -82,7 +80,7 @@ const VRContentsPage: React.FC = () => {
       <UploadBundleModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={() => {}}
+        onSubmit={handleUploadSubmit}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import { AssetBundle } from '../vr-contents/types';
+import { AssetBundle } from '../types';
 
 export const MOCK_BUNDLES: AssetBundle[] = [
   {

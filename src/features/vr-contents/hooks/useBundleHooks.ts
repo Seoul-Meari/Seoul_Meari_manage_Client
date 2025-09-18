@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { AssetBundle, AssetStatus, AssetUsage } from '../../vr-contents/types';
 
 export const useBundleStats = (bundles: AssetBundle[]) => {
-  // ... (이전과 동일, 수정 없음) ...
   return useMemo(() => {
     const totalBundles = bundles.length;
     const historicalScenes = bundles.filter(b => b.usage === 'historical' || b.usage === 'both').length;

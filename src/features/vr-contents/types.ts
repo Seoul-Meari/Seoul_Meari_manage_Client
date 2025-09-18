@@ -119,13 +119,19 @@ export interface AssetBundle {
   description?: string;
 }
 
-export interface BundleUploadPayload {
-  bundleFile: File[];         // .assetbundle, .unity3d 등
-  layoutFile: File[];         // JSON (placementGroups만 포함)
+export interface BundleFinalizePayload {
+  uploadId: string;
+  layoutFile: File;
   name: string;
   version: string;
   usage: AssetUsage;
   os: AssetOS;
   tags: string[];
   description: string;
+}
+
+export interface UploadBundleModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (payload: BundleFinalizePayload) => void;
 }
