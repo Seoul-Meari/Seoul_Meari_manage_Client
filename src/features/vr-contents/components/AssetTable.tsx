@@ -3,6 +3,7 @@ import { IconButton } from "@/components/common/IconButton";
 import { Select } from "@/components/common/Select";
 import {
   AssetBundle,
+  AssetOS,
   AssetStatus,
   AssetUsage,
 } from "@/features/vr-contents/types";
@@ -82,6 +83,26 @@ const StatusBadge: React.FC<{ status: AssetStatus }> = ({ status }) => {
   );
 };
 
+const OSBadge: React.FC<{ os: AssetOS }> = ({ os }) => {
+  const map = {
+    android: {
+      label: "Android",
+      cls: "bg-green-50 text-green-800 border-green-200",
+    },
+    ios: {
+      label: "iOS",
+      cls: "bg-stone-100 text-stone-800 border-stone-200",
+    },
+  };
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${map[os].cls}`}
+    >
+      {map[os].label}
+    </span>
+  );
+};
+
 // --- Main Component (Refactored for Responsiveness) ---
 interface BundleTableProps {
   bundles: AssetBundle[];
@@ -125,6 +146,7 @@ const BundleTable: React.FC<BundleTableProps> = ({
             <Th className="text-right">크기(MB)</Th>
             <Th>용도</Th>
             <Th>상태</Th>
+            <Th>OS</Th>
             <Th>수정</Th>
           </tr>
         </thead>
@@ -199,6 +221,14 @@ const BundleTable: React.FC<BundleTableProps> = ({
               >
                 <div className="text-right md:text-left">
                   <StatusBadge status={bundle.status} />
+                </div>
+              </td>
+              <td
+                data-label="OS"
+                className="block px-4 py-2 before:float-left before:font-bold before:content-[attr(data-label)] md:table-cell md:px-3 md:py-3 md:before:content-['']"
+              >
+                <div className="text-right md:text-left">
+                  <OSBadge os={bundle.os} />
                 </div>
               </td>
 

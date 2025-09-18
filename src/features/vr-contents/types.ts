@@ -1,5 +1,43 @@
+/**
+ * JSON 파일 예시
+{
+  "bundle_id": "park_tree_lamp_v1",
+  "bundle_url": "https://cdn.example.com/bundles/park_tree_lamp_v1.ab",
+  "prefabs": [
+    {
+      "id": "pfb-001",
+      "name": "TreePrefab_Oak",
+      "size_mb": 12.4,
+      "tags": ["tree", "nature", "oak"],
+      "location": { "latitude": 37.5665, "longitude": 126.978, "altitude": 38.2 },
+      "rotation": { "x": 0, "y": 45, "z": 0 },
+      "scale": { "x": 1.0, "y": 1.0, "z": 1.0 }
+    },
+    {
+      "id": "pfb-002",
+      "name": "StreetLamp_Modern_A",
+      "size_mb": 8.7,
+      "tags": ["lamp", "street", "light"],
+      "location": { "latitude": 37.56655, "longitude": 126.97812, "altitude": 38.1 },
+      "rotation": { "x": 0, "y": 90, "z": 0 },
+      "scale": { "x": 1.2, "y": 1.2, "z": 1.2 }
+    }
+  ],
+  "name": "시민 공원: 나무 + 가로등",
+  "version": "1.0.0",
+  "status": "draft",
+  "usage": "both",
+  "updated_at": "2025-09-18T02:30:00Z",
+  "total_size_mb": 21.1,
+  "tags": ["park", "daytime", "seoul"],
+  "description": "서울 시민 공원 구역의 기본 조경(참나무)과 가로등 배치"
+}
+ */
+
 export type AssetUsage = "historical" | "promo" | "both";
 export type AssetStatus = "draft" | "published" | "archived";
+export type AssetOS = "android" | "ios";
+export interface Transform3D { location: Location; rotation: Rotation; scale: Scale; }
 
 // --- Primitive Types for 3D Transform ---
 export interface Location {
@@ -20,43 +58,48 @@ export interface Scale {
   z: number;
 }
 
-// --- Core Data Structures ---
-export interface Prefab {
-  id: string; // UI에서 관리를 위한 내부 ID
-  name: string; // Prefab 이름 (예: "TreePrefab")
-  sizeMB: number; // 개별 프리팹의 용량
-  tags: string[]; // 검색을 위한 태그
 
-  // 3D Transform 정보
-  location: Location;
-  rotation: Rotation;
-  scale: Scale;
+// 프리팹 정의
+export interface PrefabDefinition {
+  id: string;
+  name: string;
+  sizeMB: number;
+  tags: string[];
 }
 
-// AssetBundle: 프리팹 묶음과 메타데이터. 관리의 기본 단위.
+// 프리팹 배치 그룹 (여러 transform을 한 번에)
+export interface PrefabPlacementGroup {
+  groupId: string;
+  prefabId: string;
+  transforms: Transform3D[];
+  active?: boolean;
+}
+
 export interface AssetBundle {
-  // JSON 구조 기반 필드
-  bundleId: string; // (bundle_id)
-  bundleUrl: string; // (bundle_url)
-  prefabs: Prefab[]; // (prefabs)
-  
-  // UI 관리를 위한 추가 메타데이터
-  name: string; // 번들의 표시 이름 (예: "시민 공원 나무 및 가로등")
+  bundleId: string;
+  bundleUrl: string;
+
+  prefabs: PrefabDefinition[];
+  placementGroups: PrefabPlacementGroup[];
+
+  name: string;
   version: string;
   status: AssetStatus;
   usage: AssetUsage;
+  os: AssetOS;
   updatedAt: string;
   totalSizeMB: number;
-  tags: string[];         // 번들 자체에 대한 검색 태그
-  description?: string;   // 번들에 대한 설명 (선택 사항)
+  tags: string[];
+  description?: string;
 }
 
 export interface BundleUploadPayload {
-  bundleFile: File;
-  layoutFile: File;
+  bundleFile: File[];         // .assetbundle, .unity3d 등
+  layoutFile: File[];         // JSON (placementGroups만 포함)
   name: string;
   version: string;
   usage: AssetUsage;
+  os: AssetOS;
   tags: string[];
   description: string;
 }
