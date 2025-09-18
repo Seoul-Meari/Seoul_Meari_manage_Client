@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton } from '@/components/common/IconButton';
 import { Select } from '@/components/common/Select';
-import { AssetBundle, AssetStatus, AssetUsage } from '@/features/urban-issue/types';
+import { AssetBundle, AssetStatus, AssetUsage } from '@/features/vr-contents/types';
 import { CubeIcon, EyeIcon, PencilIcon, TrashIcon } from '@/components/common/Icon';
 
 // --- Table-specific UI Components ---

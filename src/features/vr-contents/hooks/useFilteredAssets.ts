@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AssetStatus, AssetUsage, AssetBundle } from '../types';
+import { AssetStatus, AssetUsage, AssetBundle } from '../../vr-contents/types';
 
 /**
  * asset 목록을 받아 각종 필터링 및 정렬 로직을 적용하는 커스텀 훅

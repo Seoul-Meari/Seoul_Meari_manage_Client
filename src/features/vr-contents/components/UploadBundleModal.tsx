@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AssetUsage } from '@/features/urban-issue/types';
+import { AssetUsage } from '@/features/vr-contents/types';
 import { CloseIcon, UploadCloudIcon } from '@/components/common/Icon';
 import { Select } from '@/components/common/Select';
 

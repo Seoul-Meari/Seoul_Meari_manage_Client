@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AssetBundle } from '../types';
+import { AssetBundle } from '../../vr-contents/types';
 
 /**
  * asset 목록을 받아 통계 데이터를 계산하는 커스텀 훅

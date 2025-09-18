@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AssetBundle, AssetStatus, AssetUsage } from '../types';
+import { AssetBundle, AssetStatus, AssetUsage } from '../../vr-contents/types';
 
 export const useBundleStats = (bundles: AssetBundle[]) => {
   // ... (이전과 동일, 수정 없음) ...

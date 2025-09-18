@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import AiStatCard from '@/features/ai-diagnosis/components/AiStatCard';
-import { AssetBundle, AssetStatus, AssetUsage } from '@/features/urban-issue/types';
+import { AssetBundle, AssetStatus, AssetUsage } from '@/features/vr-contents/types';
 import { MOCK_BUNDLES } from '@/features/assets/mockData';
 import { HistoricIcon, MegaphoneIcon, PackageIcon, SearchIcon, StorageIcon, UploadIcon } from '@/components/common/Icon';
 import { Select } from '@/components/common/Select';
-import { useFilteredBundles, useBundleStats } from '@/features/urban-issue/hooks/useBundleHooks'; // 새로운 훅 import
 import BundleTable from '@/features/vr-contents/components/AssetTable';
 import UploadBundleModal from '@/features/vr-contents/components/UploadBundleModal';
+import { useFilteredBundles } from '@/features/vr-contents/hooks/useBundleHooks';
+import { useBundleStats } from '@/features/vr-contents/hooks/useAssetsStats';
 
 const VRContentsPage: React.FC = () => {
   // --- States ---
