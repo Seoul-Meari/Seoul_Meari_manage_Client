@@ -10,6 +10,7 @@ import ArEchoDetailPage from "./pages/ArEchoDetailPage";
 import UserManagementPage from "./pages/UserManagementPage";
 import UserDetailPage from "./pages/UserDetailPage";
 import AdminPage from "./pages/AdminPage";
+import VRContentsPage from './pages/VRContentsPage';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/ai-diagnosis/:id" element={<DiagnosisDetailPage />} />
           <Route path="/ar-echo" element={<ArEchoManagementPage />} />
           <Route path="/ar-echo/:id" element={<ArEchoDetailPage />} />
+          <Route path="/vr-contents" element={<VRContentsPage />} />
           <Route path="/users" element={<UserManagementPage />} />
           <Route path="/users/:id" element={<UserDetailPage />} />
           <Route path="/admin" element={<AdminPage />} />
