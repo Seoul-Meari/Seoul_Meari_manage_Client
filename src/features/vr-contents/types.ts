@@ -1,38 +1,64 @@
 /**
  * JSON 파일 예시
 {
-  "bundle_id": "park_tree_lamp_v1",
-  "bundle_url": "https://cdn.example.com/bundles/park_tree_lamp_v1.ab",
+  "bundleId": "bundle-001",
+  "bundleUrl": "https://cdn.example.com/bundles/bundle-001.assetbundle",
   "prefabs": [
     {
-      "id": "pfb-001",
-      "name": "TreePrefab_Oak",
-      "size_mb": 12.4,
-      "tags": ["tree", "nature", "oak"],
-      "location": { "latitude": 37.5665, "longitude": 126.978, "altitude": 38.2 },
-      "rotation": { "x": 0, "y": 45, "z": 0 },
-      "scale": { "x": 1.0, "y": 1.0, "z": 1.0 }
+      "id": "prefab-001",
+      "name": "AncientStatue",
+      "sizeMB": 12.5,
+      "tags": ["historical", "statue", "museum"]
     },
     {
-      "id": "pfb-002",
-      "name": "StreetLamp_Modern_A",
-      "size_mb": 8.7,
-      "tags": ["lamp", "street", "light"],
-      "location": { "latitude": 37.56655, "longitude": 126.97812, "altitude": 38.1 },
-      "rotation": { "x": 0, "y": 90, "z": 0 },
-      "scale": { "x": 1.2, "y": 1.2, "z": 1.2 }
+      "id": "prefab-002",
+      "name": "PromoBanner",
+      "sizeMB": 3.2,
+      "tags": ["promo", "banner"]
     }
   ],
-  "name": "시민 공원: 나무 + 가로등",
+  "placementGroups": [
+    {
+      "groupId": "group-001",
+      "prefabId": "prefab-001",
+      "transforms": [
+        {
+          "location": { "latitude": 37.5665, "longitude": 126.9780, "altitude": 50 },
+          "rotation": { "x": 0, "y": 180, "z": 0 },
+          "scale": { "x": 1, "y": 1, "z": 1 }
+        },
+        {
+          "location": { "latitude": 37.5670, "longitude": 126.9790, "altitude": 48 },
+          "rotation": { "x": 0, "y": 90, "z": 0 },
+          "scale": { "x": 0.8, "y": 0.8, "z": 0.8 }
+        }
+      ],
+      "active": true
+    },
+    {
+      "groupId": "group-002",
+      "prefabId": "prefab-002",
+      "transforms": [
+        {
+          "location": { "latitude": 37.5650, "longitude": 126.9760, "altitude": 10 },
+          "rotation": { "x": 0, "y": 0, "z": 0 },
+          "scale": { "x": 2, "y": 2, "z": 1 }
+        }
+      ],
+      "active": false
+    }
+  ],
+  "name": "Seoul Museum Assets",
   "version": "1.0.0",
-  "status": "draft",
-  "usage": "both",
-  "updated_at": "2025-09-18T02:30:00Z",
-  "total_size_mb": 21.1,
-  "tags": ["park", "daytime", "seoul"],
-  "description": "서울 시민 공원 구역의 기본 조경(참나무)과 가로등 배치"
+  "status": "published",
+  "usage": "historical",
+  "os": "android",
+  "updatedAt": "2025-09-18T12:00:00Z",
+  "totalSizeMB": 15.7,
+  "tags": ["museum", "history", "art"],
+  "description": "서울 박물관 전시용 에셋 번들"
 }
- */
+*/
 
 export type AssetUsage = "historical" | "promo" | "both";
 export type AssetStatus = "draft" | "published" | "archived";
