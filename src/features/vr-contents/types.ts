@@ -50,3 +50,13 @@ export interface AssetBundle {
   tags: string[];         // 번들 자체에 대한 검색 태그
   description?: string;   // 번들에 대한 설명 (선택 사항)
 }
+
+export interface BundleUploadPayload {
+  bundleFile: File;
+  layoutFile: File;
+  name: string;
+  version: string;
+  usage: AssetUsage;
+  tags: string[];
+  description: string;
+}

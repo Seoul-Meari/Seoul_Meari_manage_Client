@@ -1,19 +1,9 @@
 import React, { useState } from 'react';
-import { AssetUsage } from '@/features/vr-contents/types';
+import { AssetUsage, BundleUploadPayload } from '@/features/vr-contents/types';
 import { CloseIcon, UploadCloudIcon } from '@/components/common/Icon';
 import { Select } from '@/components/common/Select';
 
 // 모달이 부모 컴포넌트로 전달할 데이터 타입 정의
-export interface BundleUploadPayload {
-  bundleFile: File;
-  layoutFile: File;
-  name: string;
-  version: string;
-  usage: AssetUsage;
-  tags: string[];
-  description: string;
-}
-
 interface UploadBundleModalProps {
   isOpen: boolean;
   onClose: () => void;

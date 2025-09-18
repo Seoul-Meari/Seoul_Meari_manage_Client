@@ -9,9 +9,9 @@ export const useBundleStats = (bundles: AssetBundle[]) => {
     if (!bundles || bundles.length === 0) {
       return [
         { title: "총 번들", value: "0" },
+        { title: "스토리지(MB)", value: "0.0" },
         { title: "역사 씬", value: "0" },
         { title: "프로모션", value: "0" },
-        { title: "스토리지(MB)", value: "0.0" },
       ];
     }
 
@@ -24,9 +24,9 @@ export const useBundleStats = (bundles: AssetBundle[]) => {
 
     return [
       { title: "총 번들", value: String(total) },
+      { title: "스토리지(MB)", value: storage.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) },
       { title: "역사 씬", value: String(historical) },
       { title: "프로모션", value: String(promo) },
-      { title: "스토리지(MB)", value: storage.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) },
     ];
   }, [bundles]);
 };

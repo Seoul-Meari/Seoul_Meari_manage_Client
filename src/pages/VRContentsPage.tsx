@@ -24,10 +24,10 @@ const VRContentsPage: React.FC = () => {
 
   const statsWithIcons = bundleStats.map(stat => {
       const iconMap = {
-          "총 번들": { icon: <PackageIcon />, iconBgColor: "bg-blue-100 text-blue-600" }, // "총 에셋" -> "총 번들"
+          "총 번들": { icon: <PackageIcon />, iconBgColor: "bg-blue-100 text-blue-600" },
+          "스토리지(MB)": { icon: <StorageIcon />, iconBgColor: "bg-indigo-100 text-indigo-600" },
           "역사 씬": { icon: <HistoricIcon />, iconBgColor: "bg-purple-100 text-purple-600" },
           "프로모션": { icon: <MegaphoneIcon />, iconBgColor: "bg-yellow-100 text-yellow-600" },
-          "스토리지(MB)": { icon: <StorageIcon />, iconBgColor: "bg-indigo-100 text-indigo-600" },
       };
       return { ...stat, ...iconMap[stat.title as keyof typeof iconMap] };
   });
@@ -58,14 +58,14 @@ const VRContentsPage: React.FC = () => {
       </div>
 
       {/* Filters & Actions */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-12 items-end">
-        <div className="sm:col-span-3"><Select label="용도" value={usage} onChange={(v) => setUsage(v as any)} options={[{ value: "all", label: "전체" }, { value: "historical", label: "역사" }, { value: "promo", label: "프로모션" }, { value: "both", label: "둘 다" }]} /></div>
-        <div className="sm:col-span-3"><Select label="상태" value={status} onChange={(v) => setStatus(v as any)} options={[{ value: "all", label: "전체" }, { value: "draft", label: "드래프트" }, { value: "published", label: "배포됨" }, { value: "archived", label: "보관됨" }]} /></div>
-        <div className="sm:col-span-4">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-12 items-end">
+        <div className="md:col-span-3"><Select label="용도" value={usage} onChange={(v) => setUsage(v as any)} options={[{ value: "all", label: "전체" }, { value: "historical", label: "역사" }, { value: "promo", label: "프로모션" }, { value: "both", label: "둘 다" }]} /></div>
+        <div className="md:col-span-3"><Select label="상태" value={status} onChange={(v) => setStatus(v as any)} options={[{ value: "all", label: "전체" }, { value: "draft", label: "드래프트" }, { value: "published", label: "배포됨" }, { value: "archived", label: "보관됨" }]} /></div>
+        <div className="md:col-span-4">
           <label className="block text-sm text-gray-600 mb-1">검색</label>
           <div className="relative"><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="번들 이름, 키, 내부 에셋 태그…" className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 pl-10 outline-none focus:ring-2 focus:ring-gray-900" /><div className="pointer-events-none absolute inset-y-0 left-3 flex items-center"><SearchIcon /></div></div>
         </div>
-        <div className="sm:col-span-2"><div className="flex sm:justify-end"><button onClick={handleUploadBundle} className="inline-flex h-10 items-center gap-2 rounded-xl bg-white px-4 py-2 ring-1 ring-gray-300 hover:bg-gray-50"><UploadIcon /><span className="whitespace-nowrap">번들 업로드</span></button></div></div>
+        <div className="md:col-span-2"><div className="flex md:justify-end"><button onClick={handleUploadBundle} className="inline-flex h-10 items-center gap-2 rounded-xl bg-white px-4 py-2 ring-1 ring-gray-300 hover:bg-gray-50"><UploadIcon /><span className="whitespace-nowrap">번들 업로드</span></button></div></div>
       </div>
 
       {/* Table */}
