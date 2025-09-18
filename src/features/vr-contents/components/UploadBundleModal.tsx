@@ -118,7 +118,7 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
             inputId="bundle-file-upload"
             accept=""
             onChange={setBundleFile}
-            placeholder="assetbundle, manifest"
+            placeholder="OS 번들 파일, OS.Manifest, Asset 번들 파일, Asset.Manifest 파일을 올려주세요"
           />
           <FileDropZone
             label="레이아웃 JSON"

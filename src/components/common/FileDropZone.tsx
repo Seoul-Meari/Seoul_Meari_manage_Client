@@ -36,7 +36,7 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ label, required, inputId, a
       <div className="mt-1 flex justify-center rounded-lg border-2 border-dashed border-gray-300 px-6 pb-6 pt-5">
         <div className="text-center">
           <DummyUploadCloudIcon className="mx-auto h-10 w-10 text-gray-400" />
-          <div className="mt-2 flex text-sm text-gray-600">
+          <div className="mx-auto text-sm text-gray-600">
             <label
               htmlFor={inputId}
               className="relative cursor-pointer rounded-md bg-white font-medium text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 hover:text-blue-500"
@@ -55,7 +55,7 @@ const FileDropZone: React.FC<FileDropZoneProps> = ({ label, required, inputId, a
             </label>
             <p className="pl-1"></p>
           </div>
-          <p className="text-xs text-gray-500">{fileInfo ?? placeholder}</p>
+          <p className="h-[32px] text-xs text-gray-500">{fileInfo ?? placeholder}</p>
         </div>
       </div>
     </div>
