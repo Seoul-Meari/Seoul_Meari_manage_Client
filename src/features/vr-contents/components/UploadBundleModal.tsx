@@ -13,12 +13,12 @@ import { buildExampleLayout } from '../examples/layoutExample';
 const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const {
     // 상태
-    mainManifest, mainManifestText, assetBundle, assetBundleText, layoutFile,
+    mainManifest, assetBundle, layoutFile,
     name, version, usage, os, tags, description,
     isUploading, error, showExample,
 
     // setter
-    setMainManifest, setMainManifestText, setAssetBundle, setAssetBundleText, setLayoutFile,
+    setMainManifest, setAssetBundle, setLayoutFile,
     setName, setVersion, setUsage, setOs, setTags, setDescription,
     setShowExample,
 
@@ -37,13 +37,9 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
         {/* 1) 유니티 빌드 파일 */}
         <BundleFilesFields
           mainManifest={mainManifest}
-          mainManifestText={mainManifestText}
           assetBundle={assetBundle}
-          assetBundleText={assetBundleText}
           setMainManifest={setMainManifest}
-          setMainManifestText={setMainManifestText}
           setAssetBundle={setAssetBundle}
-          setAssetBundleText={setAssetBundleText}
         />
 
         {/* 2) 레이아웃 및 메타데이터 */}

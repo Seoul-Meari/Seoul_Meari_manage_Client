@@ -8,9 +8,7 @@ import { finalizeBundleUpload, getPresignedUrls, uploadFileToS3 } from '@/api/vr
 export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) => void, onClose: () => void) {
   // --- 파일 상태 ---
   const [mainManifest, setMainManifest] = useState<File | null>(null);
-  const [mainManifestText, setMainManifestText] = useState<File | null>(null);
   const [assetBundle, setAssetBundle] = useState<File | null>(null);
-  const [assetBundleText, setAssetBundleText] = useState<File | null>(null);
   const [layoutFile, setLayoutFile] = useState<File | null>(null);
 
   // --- 메타데이터 상태 ---
@@ -28,9 +26,7 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
 
   const resetAllStates = () => {
     setMainManifest(null);
-    setMainManifestText(null);
     setAssetBundle(null);
-    setAssetBundleText(null);
     setLayoutFile(null);
     setName('');
     setVersion('1.0.0');
@@ -50,7 +46,7 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const allFiles = [mainManifest, mainManifestText, assetBundle, assetBundleText, layoutFile];
+    const allFiles = [mainManifest, assetBundle, layoutFile];
     if (allFiles.some((f) => !f) || !name || !version) {
       setError('모든 파일과 필수 정보(이름, 버전)를 입력해야 합니다.');
       return;
@@ -61,7 +57,7 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
 
     try {
       // 1) Presigned URL 요청
-      const bundleFiles = [mainManifest!, mainManifestText!, assetBundle!, assetBundleText!];
+      const bundleFiles = [mainManifest!, assetBundle!];
       const fileInfos = bundleFiles.map((f) => ({ fileName: f.name, fileType: f.type }));
       const { uploadId, urls } = await getPresignedUrls(fileInfos);
 
@@ -106,12 +102,12 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
 
   return {
     // 상태
-    mainManifest, mainManifestText, assetBundle, assetBundleText, layoutFile,
+    mainManifest, assetBundle, layoutFile,
     name, version, usage, os, tags, description,
     isUploading, error, showExample,
 
     // setter
-    setMainManifest, setMainManifestText, setAssetBundle, setAssetBundleText, setLayoutFile,
+    setMainManifest, setAssetBundle, setLayoutFile,
     setName, setVersion, setUsage, setOs, setTags, setDescription,
     setShowExample,
 
