@@ -1,6 +1,5 @@
 import React from 'react';
 
-// 가정: 이 컴포넌트들은 프로젝트 내에 이미 존재합니다.
 import ModalShell from '@/components/common/ModalShell';
 import ActionButton from '@/components/common/ActionButton';
 import { UploadBundleModalProps } from '../types';
@@ -15,11 +14,13 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
     // 상태
     mainManifest, assetBundle, layoutFile,
     name, version, usage, os, tags, description,
+    latitude, longitude, height,                 // ✅ NEW
     isUploading, error, showExample,
 
     // setter
     setMainManifest, setAssetBundle, setLayoutFile,
     setName, setVersion, setUsage, setOs, setTags, setDescription,
+    setLatitude, setLongitude, setHeight,        // ✅ NEW
     setShowExample,
 
     handleSubmit, handleClose,
@@ -58,12 +59,17 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
           setTags={setTags}
           description={description}
           setDescription={setDescription}
+
+          latitude={Number(latitude) || 0}
+          setLatitude={(v: number) => setLatitude(String(v))}
+          longitude={Number(longitude) || 0}
+          setLongitude={(v: number) => setLongitude(String(v))}
+          height={height === '' ? 0 : Number(height)}
+          setHeight={(v: number) => setHeight(String(v))}
         />
 
-        {/* 에러 메시지 */}
         {error && <p className="p-3 text-sm text-red-700 bg-red-100 rounded-md">{error}</p>}
 
-        {/* 예시 토글 */}
         <div className="pt-2">
           <ActionButton type="button" variant="subtle" onClick={() => setShowExample((s) => !s)}>
             {showExample ? '레이아웃 JSON 예시 숨기기' : '레이아웃 JSON 예시 보기'}
@@ -74,7 +80,6 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
           <LayoutJsonExample dataBuilder={buildExampleLayout} initialCase="snake" />
         )}
 
-        {/* 액션 */}
         <div className="flex justify-end gap-3 pt-4 border-t">
           <ActionButton type="button" variant="secondary" onClick={handleClose} disabled={isUploading}>
             취소

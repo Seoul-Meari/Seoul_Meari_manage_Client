@@ -51,6 +51,17 @@ export const LabeledTextarea: React.FC<TextareaProps> = ({ label, hint, containe
   </Field>
 );
 
-export const FormRow: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = '' }) => (
-  <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${className}`}>{children}</div>
-);
+export const FormRow: React.FC<{ children: React.ReactNode; className?: string }> = ({
+  children,
+  className = '',
+}) => {
+  const count = React.Children.count(children);
+  const smCols =
+    count >= 3 ? 'sm:grid-cols-3' : count === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-1';
+
+  return (
+    <div className={`grid grid-cols-1 gap-4 ${smCols} ${className}`}>
+      {children}
+    </div>
+  );
+};

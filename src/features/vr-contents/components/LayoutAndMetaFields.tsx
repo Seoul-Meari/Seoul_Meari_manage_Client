@@ -29,6 +29,15 @@ interface LayoutAndMetaFieldsProps {
 
   description: string;
   setDescription: (v: string) => void;
+
+  latitude: number;
+  setLatitude: (v: number) => void;
+
+  longitude: number;
+  setLongitude: (v: number) => void;
+
+  height: number;
+  setHeight: (v: number) => void;
 }
 
 const LayoutAndMetaFields: React.FC<LayoutAndMetaFieldsProps> = ({
@@ -39,6 +48,9 @@ const LayoutAndMetaFields: React.FC<LayoutAndMetaFieldsProps> = ({
   os, setOs,
   tags, setTags,
   description, setDescription,
+  latitude, setLatitude,
+  longitude, setLongitude,
+  height, setHeight,
 }) => {
   return (
     <div className="p-3 border rounded-md bg-gray-50/50">
@@ -69,6 +81,35 @@ const LayoutAndMetaFields: React.FC<LayoutAndMetaFieldsProps> = ({
             value={version}
             onChange={(e) => setVersion(e.target.value)}
             placeholder="예: 1.0.0"
+          />
+        </FormRow>
+
+        <FormRow>
+          <LabeledInput
+            label="주요 위도 (Latitude)"
+            required
+            id="bundle-latitude"
+            type="number"
+            value={latitude}
+            onChange={(e) => setLatitude(parseFloat(e.target.value))}
+            placeholder="예: 37.579617"
+          />
+          <LabeledInput
+            label="주요 경도 (Longitude)"
+            required
+            id="bundle-longitude"
+            type="number"
+            value={longitude}
+            onChange={(e) => setLongitude(parseFloat(e.target.value))}
+            placeholder="예: 126.977041"
+          />
+          <LabeledInput
+            label="주요 고도 (Z)"
+            id="bundle-z"
+            type="number"
+            value={height}
+            onChange={(e) => setHeight(parseFloat(e.target.value))}
+            placeholder="예: 30.5"
           />
         </FormRow>
 

@@ -3,7 +3,7 @@ import type { AssetOS, AssetUsage, BundleFinalizePayload } from '../types';
 import { finalizeBundleUpload, getPresignedUrls, uploadFileToS3 } from '@/api/vrContentAPI';
 
 // =================================================================
-// 업로드 폼 상태/핸들러 훅
+// 업로드 폼 상태/핸들러 훅 (+ 좌표 필드)
 // =================================================================
 export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) => void, onClose: () => void) {
   // --- 파일 상태 ---
@@ -18,6 +18,11 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
   const [os, setOs] = useState<AssetOS>('android');
   const [tags, setTags] = useState('');
   const [description, setDescription] = useState('');
+
+  // --- 좌표 상태 (문자열로 받아서 제출 시 숫자로 파싱) ---
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+  const [height, setHeight] = useState('');
 
   // --- UI 상태 ---
   const [isUploading, setIsUploading] = useState(false);
@@ -34,6 +39,9 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
     setOs('android');
     setTags('');
     setDescription('');
+    setLatitude('');   // NEW
+    setLongitude('');  // NEW
+    setHeight('');          // NEW
     setError(null);
     setIsUploading(false);
     setShowExample(false);
@@ -49,6 +57,24 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
     const allFiles = [mainManifest, assetBundle, layoutFile];
     if (allFiles.some((f) => !f) || !name || !version) {
       setError('모든 파일과 필수 정보(이름, 버전)를 입력해야 합니다.');
+      return;
+    }
+
+    // --- 좌표 검증 ---
+    const latNum = parseFloat(latitude);
+    const lonNum = parseFloat(longitude);
+    const heightNum = height === '' ? undefined : parseFloat(height);
+
+    if (!Number.isFinite(latNum) || latNum < -90 || latNum > 90) {
+      setError('위도(latitude)는 -90 ~ 90 사이의 숫자여야 합니다.');
+      return;
+    }
+    if (!Number.isFinite(lonNum) || lonNum < -180 || lonNum > 180) {
+      setError('경도(longitude)는 -180 ~ 180 사이의 숫자여야 합니다.');
+      return;
+    }
+    if (height !== '' && !Number.isFinite(heightNum!)) {
+      setError('고도(height)는 숫자여야 합니다.');
       return;
     }
 
@@ -70,27 +96,35 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
         }),
       );
 
-      // 3) 최종 등록
-      const finalPayloadObject: Omit<BundleFinalizePayload, 'tags'> & { tags: string } = {
+      // 3) 최종 등록 (서버에는 FormData로 전송)
+      const formData = new FormData();
+      formData.append('uploadId', uploadId);
+      formData.append('layoutFile', layoutFile as File);
+      formData.append('name', name);
+      formData.append('version', version);
+      formData.append('usage', usage);
+      formData.append('os', os);
+      formData.append('tags', tags); // 문자열
+      formData.append('description', description);
+      formData.append('latitude', String(latNum));   // NEW
+      formData.append('longitude', String(lonNum));  // NEW
+      if (heightNum !== undefined) formData.append('height', String(heightNum)); // NEW (선택)
+
+      await finalizeBundleUpload(formData);
+
+      // 부모로 알림 (프론트 내에서 사용할 구조로 전달)
+      onSubmit({
         uploadId,
         layoutFile: layoutFile as File,
         name,
         version,
         usage,
         os,
-        tags, // 서버에는 문자열로
-        description,
-      };
-
-      const formData = new FormData();
-      Object.entries(finalPayloadObject).forEach(([key, value]) => formData.append(key, value as Blob | string));
-      await finalizeBundleUpload(formData);
-
-      // 부모로 알림 (tags 배열 변환)
-      onSubmit({
-        ...finalPayloadObject,
         tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
-      } as unknown as BundleFinalizePayload);
+        description,
+        // 좌표도 함께 넘김 (타입에 없다면 확장)
+        ...( { latitude: latNum, longitude: lonNum, height: heightNum } as any ),
+      } as BundleFinalizePayload);
 
       handleClose();
     } catch (err: any) {
@@ -104,11 +138,13 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
     // 상태
     mainManifest, assetBundle, layoutFile,
     name, version, usage, os, tags, description,
+    latitude, longitude, height, // NEW
     isUploading, error, showExample,
 
     // setter
     setMainManifest, setAssetBundle, setLayoutFile,
     setName, setVersion, setUsage, setOs, setTags, setDescription,
+    setLatitude, setLongitude, setHeight, // NEW
     setShowExample,
 
     // 핸들러
