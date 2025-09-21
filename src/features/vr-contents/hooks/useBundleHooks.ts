@@ -55,7 +55,7 @@ export const useFilteredBundles = (
     // 1) Filter
     filtered = filtered.filter(bundle => {
       if (usage !== 'all' && bundle.usage !== usage) return false;
-      if (status !== 'all' && bundle.layoutJson.status !== status) return false;
+      if (status !== 'all' && bundle.status !== status) return false;
 
       if (lowerQuery) {
         const name = (bundle.name ?? '').toLowerCase();

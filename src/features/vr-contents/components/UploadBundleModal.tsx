@@ -15,13 +15,13 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
     // 상태
     mainManifest, assetBundle, layoutFile,
     name, version, usage, os, tags, description,
-    latitude, longitude, height,                 // ✅ NEW
+    latitude, longitude, altitude,                 // ✅ NEW
     isUploading, error, showExample,
 
     // setter
     setMainManifest, setAssetBundle, setLayoutFile,
     setName, setVersion, setUsage, setOs, setTags, setDescription,
-    setLatitude, setLongitude, setHeight,        // ✅ NEW
+    setLatitude, setLongitude, setAltitude,        // ✅ NEW
     setShowExample,
 
     handleSubmit, handleClose,
@@ -65,8 +65,8 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
           setLatitude={(v: number) => setLatitude(String(v))}
           longitude={Number(longitude) || 0}
           setLongitude={(v: number) => setLongitude(String(v))}
-          height={height === '' ? 0 : Number(height)}
-          setHeight={(v: number) => setHeight(String(v))}
+          altitude={altitude === '' ? 0 : Number(altitude)}
+          setAltitude={(v: number) => setAltitude(String(v))}
         />
 
         {error && <p className="p-3 text-sm text-red-700 bg-red-100 rounded-md">{error}</p>}

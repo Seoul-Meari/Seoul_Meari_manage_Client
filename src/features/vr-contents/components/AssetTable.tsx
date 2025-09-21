@@ -235,7 +235,7 @@ const BundleTable: React.FC<BundleTableProps> = ({
                 className="block px-4 py-2 before:float-left before:font-bold before:content-[attr(data-label)] md:table-cell md:px-3 md:py-3 md:before:content-['']"
               >
                 <div className="text-right md:text-left">
-                  <StatusBadge status={bundle.layoutJson.status} />
+                  <StatusBadge status={bundle.status} />
                 </div>
               </td>
               <td

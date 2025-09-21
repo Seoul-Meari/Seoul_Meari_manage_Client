@@ -22,7 +22,7 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
   // --- 좌표 상태 (문자열로 받아서 제출 시 숫자로 파싱) ---
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
-  const [height, setHeight] = useState('');
+  const [altitude, setAltitude] = useState('');
 
   // --- UI 상태 ---
   const [isUploading, setIsUploading] = useState(false);
@@ -41,7 +41,7 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
     setDescription('');
     setLatitude('');   // NEW
     setLongitude('');  // NEW
-    setHeight('');          // NEW
+    setAltitude('');          // NEW
     setError(null);
     setIsUploading(false);
     setShowExample(false);
@@ -63,7 +63,7 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
     // --- 좌표 검증 ---
     const latNum = parseFloat(latitude);
     const lonNum = parseFloat(longitude);
-    const heightNum = height === '' ? undefined : parseFloat(height);
+    const altitudeNum = altitude === '' ? undefined : parseFloat(altitude);
 
     if (!Number.isFinite(latNum) || latNum < -90 || latNum > 90) {
       setError('위도(latitude)는 -90 ~ 90 사이의 숫자여야 합니다.');
@@ -73,8 +73,8 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
       setError('경도(longitude)는 -180 ~ 180 사이의 숫자여야 합니다.');
       return;
     }
-    if (height !== '' && !Number.isFinite(heightNum!)) {
-      setError('고도(height)는 숫자여야 합니다.');
+    if (altitude !== '' && !Number.isFinite(altitudeNum!)) {
+      setError('고도(altitude)는 숫자여야 합니다.');
       return;
     }
 
@@ -108,7 +108,7 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
       formData.append('description', description);
       formData.append('latitude', String(latNum));   // NEW
       formData.append('longitude', String(lonNum));  // NEW
-      if (heightNum !== undefined) formData.append('height', String(heightNum)); // NEW (선택)
+      if (altitudeNum !== undefined) formData.append('altitude', String(altitudeNum)); // NEW (선택)
 
 
       const formDataObject = Object.fromEntries(formData.entries());
@@ -127,7 +127,7 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
         tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
         description,
         // 좌표도 함께 넘김 (타입에 없다면 확장)
-        ...( { latitude: latNum, longitude: lonNum, height: heightNum } as any ),
+        ...( { latitude: latNum, longitude: lonNum, altitude: altitudeNum } as any ),
       } as BundleFinalizePayload);
 
       handleClose();
@@ -142,13 +142,13 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
     // 상태
     mainManifest, assetBundle, layoutFile,
     name, version, usage, os, tags, description,
-    latitude, longitude, height, // NEW
+    latitude, longitude, altitude: altitude, // NEW
     isUploading, error, showExample,
 
     // setter
     setMainManifest, setAssetBundle, setLayoutFile,
     setName, setVersion, setUsage, setOs, setTags, setDescription,
-    setLatitude, setLongitude, setHeight, // NEW
+    setLatitude, setLongitude, setAltitude: setAltitude, // NEW
     setShowExample,
 
     // 핸들러

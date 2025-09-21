@@ -103,11 +103,10 @@ export interface PrefabPlacementGroup {
 
 export interface AssetBundle {
   bundleId: string;
-  bundleUrl: string;
+  bundleUrl?: string;
 
   // 관계 데이터
   prefabs: PrefabDefinition[];
-  placementGroups: PrefabPlacementGroup[];
 
   // 메타데이터
   name: string;
@@ -117,7 +116,6 @@ export interface AssetBundle {
   os: AssetOS;
 
   // 시간 관련
-  createdAt: string;
   updatedAt: string;
 
   // 크기
@@ -128,28 +126,28 @@ export interface AssetBundle {
   description?: string;
 
   // 추가 필드
-  height?: number | null; // null 가능
-  layoutJson: LayoutJsonFromServer; // 서버에서 내려오는 레이아웃 JSON
+  layoutJson: LayoutJson; // 서버에서 내려오는 레이아웃 JSON
   location: {
     type: string; // 보통 "Point"
-    coordinates: [number, number]; // [lon, lat]
+    coordinates: [number, number, number]; // [lon, lat]
   };
 }
 
-export interface LayoutJsonFromServer {
+export interface LayoutJson {
   bundleId: string;
-  bundleUrl: string;
-
-  // 에셋 관련
-  prefabs: PrefabDefinition[];
-  placementGroups: PrefabPlacementGroup[];
+  bundleUrl?: string;
 
   // 메타데이터
   name: string;
-  version: string;
-  status: AssetStatus;
-  usage: AssetUsage;
   os: AssetOS;
+  version: string;
+  usage: AssetUsage;
+
+  // 부가 정보
+  tags: string[];
+  description?: string;
+  
+  mainLocation: Location;
 
   // 시간 관련
   updatedAt: string;
@@ -157,9 +155,9 @@ export interface LayoutJsonFromServer {
   // 크기
   totalSizeMB: number;
 
-  // 부가 정보
-  tags: string[];
-  description?: string;
+  // 에셋 관련
+  prefabs: PrefabDefinition[];
+  placementGroups: PrefabPlacementGroup[];
 }
 
 export interface BundleFinalizePayload {
