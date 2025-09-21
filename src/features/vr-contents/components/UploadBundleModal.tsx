@@ -1,13 +1,14 @@
 import React from 'react';
-
+import ReactDOM from 'react-dom';
+import { UploadBundleModalProps } from '@/features/vr-contents/types';
 import ModalShell from '@/components/common/ModalShell';
 import ActionButton from '@/components/common/ActionButton';
-import { UploadBundleModalProps } from '../types';
 import { useBundleUploadForm } from '../hooks/useBundleUploadForm';
 import BundleFilesFields from './BundleFilesFields';
 import LayoutAndMetaFields from './LayoutAndMetaFields';
 import LayoutJsonExample from './LayoutJsonExample';
 import { buildExampleLayout } from '../examples/layoutExample';
+
 
 const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const {
@@ -26,7 +27,7 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
     handleSubmit, handleClose,
   } = useBundleUploadForm(onSubmit, onClose);
 
-  return (
+  const modalContent = (
     <ModalShell
       isOpen={isOpen}
       onClose={handleClose}
@@ -91,6 +92,9 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
       </form>
     </ModalShell>
   );
+
+  const modalRoot = document.getElementById('modal-root');
+  return modalRoot ? ReactDOM.createPortal(modalContent, modalRoot) : null;
 };
 
 export default UploadBundleModal;
