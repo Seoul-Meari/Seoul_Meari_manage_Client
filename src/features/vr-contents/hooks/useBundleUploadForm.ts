@@ -110,6 +110,10 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
       formData.append('longitude', String(lonNum));  // NEW
       if (heightNum !== undefined) formData.append('height', String(heightNum)); // NEW (선택)
 
+
+      const formDataObject = Object.fromEntries(formData.entries());
+      console.log(formDataObject); // { key1: value1, key2: value2, ... } 처럼 보임 (O)
+
       await finalizeBundleUpload(formData);
 
       // 부모로 알림 (프론트 내에서 사용할 구조로 전달)

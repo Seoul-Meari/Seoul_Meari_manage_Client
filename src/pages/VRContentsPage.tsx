@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AiStatCard from '@/features/ai-diagnosis/components/AiStatCard';
 import { AssetBundle, AssetStatus, AssetUsage } from '@/features/vr-contents/types';
 import { HistoricIcon, MegaphoneIcon, PackageIcon, SearchIcon, StorageIcon, UploadIcon } from '@/components/common/Icon';
@@ -7,7 +7,7 @@ import BundleTable from '@/features/vr-contents/components/AssetTable';
 import UploadBundleModal from '@/features/vr-contents/components/UploadBundleModal';
 import { useFilteredBundles } from '@/features/vr-contents/hooks/useBundleHooks';
 import { useBundleStats } from '@/features/vr-contents/hooks/useAssetsStats';
-import { MOCK_BUNDLES } from '@/features/vr-contents/examples/mockData';
+import { getBundles } from '@/api/vrContentAPI';
 
 const VRContentsPage: React.FC = () => {
   // --- States ---
@@ -15,13 +15,49 @@ const VRContentsPage: React.FC = () => {
   const [usage, setUsage] = useState<AssetUsage | "all">("all");
   const [status, setStatus] = useState<AssetStatus | "all">("all");
   const [sortBy, setSortBy] = useState<'recent' | 'size' | 'name'>("recent");
-  const [bundles] = useState<AssetBundle[]>(MOCK_BUNDLES); // rows -> bundles, MOCK_ASSETS -> MOCK_BUNDLES
+  const [bundles, setBundles] = useState<AssetBundle[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
+  const [refetchTrigger] = useState(0);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+    // --- Data Fetching Effect ---
+  useEffect(() => {
+    const fetchBundles = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await getBundles({
+          q: q || undefined,
+          usage,
+          status,
+          sortBy,
+          page: pagination.page,
+          limit: pagination.limit
+        });
+        setBundles(response.data);
+        console.log(response.data);
+        setPagination(prev => ({ ...prev, total: response.total }));
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const timerId = setTimeout(() => {
+      fetchBundles();
+    }, 300);
+
+    return () => clearTimeout(timerId);
+
+  }, [q, usage, status, sortBy, pagination.page, pagination.limit, refetchTrigger]);
 
   // --- Memos (Computed Data) ---
   const filteredBundles = useFilteredBundles(bundles, q, usage, status, sortBy); // hook 변경
   const bundleStats = useBundleStats(bundles); // hook 변경
-
   const statsWithIcons = bundleStats.map(stat => {
       const iconMap = {
           "총 번들": { icon: <PackageIcon />, iconBgColor: "bg-blue-100 text-blue-600" },
@@ -29,7 +65,7 @@ const VRContentsPage: React.FC = () => {
           "역사 씬": { icon: <HistoricIcon />, iconBgColor: "bg-purple-100 text-purple-600" },
           "프로모션": { icon: <MegaphoneIcon />, iconBgColor: "bg-yellow-100 text-yellow-600" },
       };
-      return { ...stat, ...iconMap[stat.title as keyof typeof iconMap] };
+      return { ...stat, ...iconMap[stat.title as keyof typeof iconMap], change: null };
   });
 
   // --- Handlers ---
@@ -67,14 +103,18 @@ const VRContentsPage: React.FC = () => {
       </div>
 
       {/* Table */}
-      <BundleTable
-        bundles={filteredBundles}
-        sortBy={sortBy}
-        onSortChange={setSortBy}
-        onPreview={handlePreviewBundle}
-        onEdit={handleEditBundle}
-        onDelete={handleDeleteBundle}
-      />
+      {isLoading && <div className="text-center p-10">데이터를 불러오는 중입니다...</div>}
+      {error && <div className="text-center p-10 text-red-600 bg-red-50 rounded-lg">오류: {error}</div>}
+      {!isLoading && !error && (
+        <BundleTable
+          bundles={filteredBundles}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
+          onPreview={handlePreviewBundle}
+          onEdit={handleEditBundle}
+          onDelete={handleDeleteBundle}
+        />
+      )}
       
       {/* 모달은 이 div 안에 있어도 position: fixed 속성 때문에 화면 전체에 올바르게 표시됩니다. */}
       <UploadBundleModal

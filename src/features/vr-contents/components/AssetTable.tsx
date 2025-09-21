@@ -113,6 +113,21 @@ interface BundleTableProps {
   onDelete: (bundle: AssetBundle) => void;
 }
 
+const toNumber = (v: unknown): number => {
+  const n = typeof v === 'number' ? v : Number(v);
+  return Number.isFinite(n) ? n : 0;
+};
+
+// 번들 용량(MB) 얻기: totalSizeMB → layoutJson.totalSizeMB 폴백
+const getSizeMB = (bundle: AssetBundle): number =>
+  toNumber(bundle.layoutJson.totalSizeMB);
+
+// 표기용
+const formatSizeMB = (bundle: any): string => {
+  const n = getSizeMB(bundle);
+  return n > 0 ? n.toFixed(1) : '—';
+};
+
 const BundleTable: React.FC<BundleTableProps> = ({
   bundles,
   sortBy,
@@ -196,7 +211,7 @@ const BundleTable: React.FC<BundleTableProps> = ({
                 className="block px-4 py-2 before:float-left before:font-bold before:content-[attr(data-label)] md:table-cell md:px-3 md:py-3 md:before:content-['']"
               >
                 <div className="text-right md:text-center">
-                  {bundle.prefabs.length}
+                  {bundle.layoutJson.prefabs.length}
                 </div>
               </td>
               <td
@@ -204,7 +219,7 @@ const BundleTable: React.FC<BundleTableProps> = ({
                 className="block px-4 py-2 before:float-left before:font-bold before:content-[attr(data-label)] md:table-cell md:px-3 md:py-3 md:before:content-['']"
               >
                 <div className="text-right tabular-nums md:text-right">
-                  {bundle.totalSizeMB.toFixed(1)}
+                  {formatSizeMB(bundle)}
                 </div>
               </td>
               <td
@@ -220,7 +235,7 @@ const BundleTable: React.FC<BundleTableProps> = ({
                 className="block px-4 py-2 before:float-left before:font-bold before:content-[attr(data-label)] md:table-cell md:px-3 md:py-3 md:before:content-['']"
               >
                 <div className="text-right md:text-left">
-                  <StatusBadge status={bundle.status} />
+                  <StatusBadge status={bundle.layoutJson.status} />
                 </div>
               </td>
               <td

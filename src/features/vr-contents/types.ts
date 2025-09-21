@@ -105,16 +105,59 @@ export interface AssetBundle {
   bundleId: string;
   bundleUrl: string;
 
+  // 관계 데이터
   prefabs: PrefabDefinition[];
   placementGroups: PrefabPlacementGroup[];
 
+  // 메타데이터
   name: string;
   version: string;
   status: AssetStatus;
   usage: AssetUsage;
   os: AssetOS;
+
+  // 시간 관련
+  createdAt: string;
   updatedAt: string;
+
+  // 크기
   totalSizeMB: number;
+
+  // 부가 정보
+  tags: string[];
+  description?: string;
+
+  // 추가 필드
+  height?: number | null; // null 가능
+  layoutJson: LayoutJsonFromServer; // 서버에서 내려오는 레이아웃 JSON
+  location: {
+    type: string; // 보통 "Point"
+    coordinates: [number, number]; // [lon, lat]
+  };
+}
+
+export interface LayoutJsonFromServer {
+  bundleId: string;
+  bundleUrl: string;
+
+  // 에셋 관련
+  prefabs: PrefabDefinition[];
+  placementGroups: PrefabPlacementGroup[];
+
+  // 메타데이터
+  name: string;
+  version: string;
+  status: AssetStatus;
+  usage: AssetUsage;
+  os: AssetOS;
+
+  // 시간 관련
+  updatedAt: string;
+
+  // 크기
+  totalSizeMB: number;
+
+  // 부가 정보
   tags: string[];
   description?: string;
 }

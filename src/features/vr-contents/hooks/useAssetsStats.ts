@@ -20,7 +20,7 @@ export const useBundleStats = (bundles: AssetBundle[]) => {
     const historical = bundles.filter((b) => b.usage === "historical" || b.usage === "both").length;
     const promo = bundles.filter((b) => b.usage === "promo" || b.usage === "both").length;
     // 'totalSizeMB'를 합산합니다.
-    const storage = bundles.reduce((acc, b) => acc + b.totalSizeMB, 0);
+    const storage = bundles.reduce((acc, b) => acc + b.layoutJson.totalSizeMB, 0);
 
     return [
       { title: "총 번들", value: String(total) },
