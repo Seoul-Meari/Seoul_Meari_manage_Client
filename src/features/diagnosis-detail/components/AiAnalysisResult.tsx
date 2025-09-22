@@ -1,9 +1,29 @@
-const AiAnalysisResult = () => {
-    const confidenceScores = [
-        { name: '객체 인식', score: 94 },
-        { name: '위험도 평가', score: 87 },
-        { name: '상황 분류', score: 92 },
-    ];
+interface AiAnalysisResultProps {
+    complaintData: any;
+}
+
+const AiAnalysisResult = ({ complaintData }: AiAnalysisResultProps) => {
+    // 위험도에 따른 객체 및 위험 요소 매핑
+    const getAnalysisData = (tag: string) => {
+        console.log(tag);
+        const analysisMap: { [key: string]: any } = {
+            'porthole': {
+                objects: ['도로', '구멍', '아스팔트'],
+                risks: ['차량 안전 위험', '보행자 위험', '교통 지연'],
+                recommendations: ['긴급 보수', '교통 통제', '정기 점검']
+            },
+            'trashbag': {
+                objects: ['쓰레기', '쓰레기통', '쓰레기봉투'],
+                risks: ['시각적 피해', '재산 손상', '환경 오염'],
+                recommendations: ['제거 작업', '감시 강화', '예방 조치']
+            }
+        };
+        return analysisMap[tag] || {
+            objects: ['미분류 객체'],
+            risks: ['위험 요소 분석 중'],
+            recommendations: ['조치 방안 검토 중']
+        };
+    };
 
     return (
         <div className="bg-white p-6 shadow rounded-lg">
@@ -16,10 +36,12 @@ const AiAnalysisResult = () => {
                 {/* 감지된 객체 */}
                 <div>
                     <h4 className="font-semibold text-gray-800">감지된 객체</h4>
-                    <div className="mt-2 flex space-x-2">
-                        <span className="px-3 py-1 text-sm rounded-full bg-orange-100 text-orange-800">보도블록</span>
-                        <span className="px-3 py-1 text-sm rounded-full bg-red-100 text-red-800">균열</span>
-                        <span className="px-3 py-1 text-sm rounded-full bg-gray-200 text-gray-800">아스팔트</span>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                        {getAnalysisData(complaintData.tag).objects.map((object: string, index: number) => (
+                            <span key={index} className="px-3 py-1 text-sm rounded-full bg-orange-100 text-orange-800">
+                                {object}
+                            </span>
+                        ))}
                     </div>
                 </div>
                 
@@ -27,39 +49,18 @@ const AiAnalysisResult = () => {
                 <div>
                     <h4 className="font-semibold text-gray-800">위험 요소</h4>
                     <ul className="mt-2 space-y-1 text-sm text-gray-600">
-                        <li className="flex items-center"><WarningIcon /> <span className="ml-2">보행자 안전에 잠재적 위험</span></li>
-                        <li className="flex items-center"><WarningIcon /> <span className="ml-2">우천 시 미끄러짐 위험 증가</span></li>
-                        <li className="flex items-center"><WarningIcon /> <span className="ml-2">균열 확산 가능성</span></li>
+                        <span className="ml-2">{complaintData.danger}</span>
                     </ul>
                 </div>
 
                 {/* 권장 조치 */}
                 <div>
                     <h4 className="font-semibold text-gray-800">권장 조치</h4>
-                     <ul className="mt-2 space-y-1 text-sm text-gray-600">
-                        <li className="flex items-center"><CheckIcon /> <span className="ml-2">정기 점검 스케쥴 추가</span></li>
-                        <li className="flex items-center"><CheckIcon /> <span className="ml-2">균열 보수 작업 계획</span></li>
-                        <li className="flex items-center"><CheckIcon /> <span className="ml-2">주변 보도블록 상태 확인</span></li>
+                    <ul className="mt-2 space-y-1 text-sm text-gray-600">
+                        <span className="ml-2">{complaintData.solution}</span>
                     </ul>
                 </div>
                 
-                {/* 신뢰도 점수 */}
-                <div>
-                    <h4 className="font-semibold text-gray-800">신뢰도 점수</h4>
-                    <div className="mt-2 space-y-2">
-                        {confidenceScores.map(item => (
-                            <div key={item.name}>
-                                <div className="flex justify-between text-sm text-gray-600">
-                                    <span>{item.name}</span>
-                                    <span>{item.score}%</span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                    <div className="bg-teal-500 h-2 rounded-full" style={{ width: `${item.score}%` }}></div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
             </div>
         </div>
     );
