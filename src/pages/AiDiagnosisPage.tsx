@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AiStatCard from '../features/ai-diagnosis/components/AiStatCard';
 import FilterPanel from '../features/ai-diagnosis/components/FilterPanel';
 import DiagnosisCard from '../features/ai-diagnosis/components/DiagnosisCard';
@@ -6,9 +6,85 @@ import ArEchoMap from '../features/ai-diagnosis/components/ArEchoMap';
 import DistrictStat from '../features/ai-diagnosis/components/DistrictStat';
 import MapLegend from '../features/ai-diagnosis/components/MapLegend';
 
+// API에서 민원 데이터를 가져오는 함수
+const fetchComplaintsList = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/complaints/complaints-list', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    console.log(response);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('민원 데이터를 가져오는 중 오류 발생:', error);
+    throw error;
+  }
+};
+
+// 민원 데이터를 DiagnosisCard 형식으로 변환하는 함수
+const transformComplaintToDiagnosis = (complaint: any, index: number) => {
+  // 상태 매핑 (is_confirmed에 따라)
+  const getStatus = (isConfirmed: boolean) => {
+    return isConfirmed ? '해결됨' : '대기';
+  };
+
+  // 위험도 한글 변환
+  const getDangerText = (danger: string) => {
+    const dangerMap: { [key: string]: string } = {
+      'illegal_dumping': '불법 투기',
+      'pothole': '도로 파손',
+      'broken_sidewalk': '보도 파손',
+      'damaged_sign': '표지판 손상',
+      'graffiti': '낙서'
+    };
+    return dangerMap[danger] || danger;
+  };
+
+  return {
+    id: complaint.complaint_id,
+    title: getDangerText(complaint.danger) || `민원 #${index + 1}`,
+    description: complaint.detail || '민원 내용 없음',
+    timestamp: complaint.timestamp || new Date().toISOString(),
+    location: `${complaint.latitude}, ${complaint.longitude}`,
+    confidence: complaint.accuracy || 75,
+    status: getStatus(complaint.is_confirmed) as '대기' | '해결됨',
+    image: complaint.S3_url,
+  };
+};
 
 const AiDiagnosisPage = () => {
   const [view, setView] = useState<'list' | 'map'>('list');
+  const [complaintsData, setComplaintsData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // 민원 데이터 가져오기
+  useEffect(() => {
+    const loadComplaintsData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const data = await fetchComplaintsList();
+        setComplaintsData(data);
+        console.log('민원 데이터 로드 완료:', data);
+      } catch (err) {
+        setError('민원 데이터를 불러오는데 실패했습니다.');
+        console.error('민원 데이터 로드 실패:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadComplaintsData();
+  }, []);
 
   // Mock Data
   const stats = [
@@ -18,12 +94,6 @@ const AiDiagnosisPage = () => {
     { title: '해결 완료', value: '2,735', change: '+98', icon: <CheckCircleIcon />, iconBgColor: 'bg-green-100 text-green-600' },
   ];
 
-  const diagnosisData = [
-    { title: '광화문광장 북측', description: '보도블록 모서리에 경미한 균열 발견. 보행자 안전에 잠재적 위험 요소로 판단됨. 향후 확산 가능성을 모니터링 권장.', timestamp: '2024-01-15 14:30', location: '37.5759, 126.9768', confidence: 87, status: '대기' as const, severity: '보통' as const },
-    { title: '덕수궁 돌담길', description: '가로등 하단부 부식 감지. 장기 방치 시 전기 점검을 통한 사전 보수 필요. 현재 안전성에는 문제없음.', timestamp: '2024-01-15 13:45', location: '37.5658, 126.9750', confidence: 73, status: '해결됨' as const, severity: '낮음' as const },
-    { title: '청계천 입구', description: '계단 난간 연결부 느슨함 발견. 즉시 점검 및 보수 권장. 보행자 안전에 직접적 영향 가능.', timestamp: '2024-01-15 12:20', location: '37.5707, 126.9772', confidence: 94, status: '대기' as const, severity: '높음' as const },
-    { title: '명동성당 앞', description: '보도 타일 일부 들뜸 현상 관찰. 우천 시 미끄러짐 위험 증가 예상.', timestamp: '2024-01-15 11:15', location: '37.5633, 126.9840', confidence: 82, status: '대기' as const, severity: '보통' as const },
-  ];
   
   const districtData = [
       { district: '강남구', active: 15, total: 42 },
@@ -40,6 +110,8 @@ const AiDiagnosisPage = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">AI 도시 진단</h1>
           <p className="text-md text-gray-500 mt-1">실시간 위험 요소 분석 및 관리</p>
+          {loading && <p className="text-sm text-blue-600 mt-1">민원 데이터를 불러오는 중...</p>}
+          {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
         </div>
       </div>
       
@@ -53,12 +125,43 @@ const AiDiagnosisPage = () => {
       {/* Filter Panel */}
       <FilterPanel activeView={view} onViewChange={setView} />
       
+      {/* 민원 데이터 정보 */}
+      {complaintsData.length > 0 && (
+        <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-blue-900">
+              민원 데이터 ({complaintsData.length}건) 로드 완료
+            </h3>
+            <span className="text-sm text-blue-600">
+              {new Date().toLocaleTimeString()}
+            </span>
+          </div>
+          <p className="text-sm text-blue-700 mt-1">
+            위의 진단 카드들이 실제 민원 데이터로 표시됩니다.
+          </p>
+        </div>
+      )}
+
       {/* Conditional Content */}
       {view === 'list' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {diagnosisData.map((data, index) => (
-            <DiagnosisCard key={index} {...data} />
-          ))}
+          {/* 민원 데이터 표시 */}
+          {complaintsData.length > 0 ? (
+            complaintsData.map((complaint, index) => {
+              const transformedData = transformComplaintToDiagnosis(complaint, index);
+              return (
+                <DiagnosisCard 
+                  key={`complaint-${index}`}
+                  {...transformedData}
+                />
+              );
+            })
+          ) : (
+            <div className="col-span-2 text-center py-12">
+              <p className="text-gray-500 text-lg">민원 데이터가 없습니다.</p>
+              <p className="text-gray-400 text-sm mt-2">API에서 데이터를 가져오는 중이거나 데이터가 없습니다.</p>
+            </div>
+          )}
         </div>
       ) : (
         <div className="space-y-6">
