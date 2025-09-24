@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000'; // TODO: .env 파일로 분리하는 것이 좋습니다.
+const API_BASE_URL = 'http://ec2-13-57-38-28.us-west-1.compute.amazonaws.com'; // TODO: .env 파일로 분리하는 것이 좋습니다.
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -45,3 +45,5 @@ axiosInstance.interceptors.response.use(
 
 export default axiosInstance;
 export * from './dashboardAPI';
+export * from './complaintsAPI';
+export * from './echoAPI';

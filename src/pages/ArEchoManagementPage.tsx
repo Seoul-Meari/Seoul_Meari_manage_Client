@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useLayoutEffect } from 'react';
+import { getEchoList } from '@/api';
 import AiStatCard from '../features/ai-diagnosis/components/AiStatCard';
 import ArEchoFilterPanel from '../features/ar-echo/components/ArEchoFilterPanel';
 import ArEchoCard from '../features/ar-echo/components/ArEchoCard';
@@ -86,17 +87,6 @@ const EchoMap: React.FC<EchoMapProps> = ({ echos }) => {
 // ==================================================================================
 // 페이지 메인 컴포넌트
 // ==================================================================================
-const fetchEchoList = async () => {
-    try {
-      const response = await fetch(`http://localhost:3000/echo/echo-list`);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      console.error('메아리 목록을 가져오는 중 오류 발생:', error);
-      throw error;
-    }
-};
-
 const ArEchoManagementPage = () => {
     const [view, setView] = useState<'list' | 'map'>('list');
     const [echoData, setEchoData] = useState<any[]>([]);
@@ -109,7 +99,7 @@ const ArEchoManagementPage = () => {
             setLoading(true);
             setError(null);
             try {
-                const data = await fetchEchoList();
+                const data = await getEchoList();
                 setEchoData(data || []);
             } catch (err) {
                 setError('메아리 데이터를 불러오는데 실패했습니다.');

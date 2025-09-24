@@ -1,24 +1,25 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { deleteEcho, getEchoById, getPresignedUrl } from '@/api';
 
-const fetchEchoData = async (id: string) => {
-    const response = await fetch(`http://localhost:3000/echo/echo-list/${id}`);
-    const data = await response.json();
-    console.log(data);
-    return data;
-};
+// const fetchEchoData = async (id: string) => {
+//     const response = await fetch(`http://localhost:3000/echo/echo-list/${id}`);
+//     const data = await response.json();
+//     console.log(data);
+//     return data;
+// };
 
-const fetchEchoImageKey = async (image_key: string) => {
-    const response = await fetch(`http://localhost:3000/complaints/presigned-url`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ "S3_url": image_key }),
-    });
-    const data = await response.json();
-    return data.presigned_url;
-};
+// const fetchEchoImageKey = async (image_key: string) => {
+//     const response = await fetch(`http://localhost:3000/complaints/presigned-url`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ "S3_url": image_key }),
+//     });
+//     const data = await response.json();
+//     return data.presigned_url;
+// };
 
 const formatDateTime = (dateTime: string) => {
     try {
@@ -46,26 +47,26 @@ const formatDateTime = (dateTime: string) => {
     }
 };
 
-const fetchDeleteEcho = async (id: string) => {
-    try {
-        console.log('삭제 요청 URL:', `http://localhost:3000/echo/echo-list/${id}`);
-        const response = await fetch(`http://localhost:3000/echo/echo-list/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+// const fetchDeleteEcho = async (id: string) => {
+//     try {
+//         console.log('삭제 요청 URL:', `http://localhost:3000/echo/echo-list/${id}`);
+//         const response = await fetch(`http://localhost:3000/echo/echo-list/${id}`, {
+//             method: 'DELETE',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//         });
         
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! status: ${response.status}`);
+//         }
         
-        return await response.json();
-    } catch (error) {
-        console.error('메아리 삭제 중 오류 발생:', error);
-        throw error;
-    }
-};
+//         return await response.json();
+//     } catch (error) {
+//         console.error('메아리 삭제 중 오류 발생:', error);
+//         throw error;
+//     }
+// };
 
 const ArEchoDetailPage = () => {
     const { id } = useParams();
@@ -78,14 +79,14 @@ const ArEchoDetailPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await fetchEchoData(id as string);
+                const data = await getEchoById(id as string);
                 setEchoData(data);
                 console.log('로드된 데이터:', data);
                 
                 // image_key가 있으면 presigned URL로 변환
                 if (data?.image_key) {
                     try {
-                        const presignedUrl = await fetchEchoImageKey(data.image_key);
+                        const presignedUrl = await getPresignedUrl(data.image_key);
                         setImageUrl(presignedUrl);
                     } catch (error) {
                         console.error('이미지 URL 변환 실패:', error);
@@ -106,7 +107,7 @@ const ArEchoDetailPage = () => {
         
         setIsDeleting(true);
         try {
-            await fetchDeleteEcho(id);
+            await deleteEcho(id);
             alert('메아리가 성공적으로 삭제되었습니다.');
             navigate('/ar-echo');
         } catch (error) {

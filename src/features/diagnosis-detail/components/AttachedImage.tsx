@@ -1,20 +1,21 @@
 import { useState, useEffect } from 'react';
+import { getPresignedUrl } from '@/api';
 
 interface AttachedImageProps {
     complaintData: any;
 }
 
-const createPresignedUrl = async (s3_url: string) => {
-    const response = await fetch(`http://localhost:3000/complaints/presigned-url`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ "S3_url": s3_url }),
-    });
-    const data = await response.json();
-    return data.presigned_url;
-}
+// const createPresignedUrl = async (s3_url: string) => {
+//     const response = await fetch(`http://localhost:3000/complaints/presigned-url`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ "S3_url": s3_url }),
+//     });
+//     const data = await response.json();
+//     return data.presigned_url;
+// }
 
 const AttachedImage = ({ complaintData }: AttachedImageProps) => {
     const [presignedUrl, setPresignedUrl] = useState<string | null>(null);
@@ -23,10 +24,10 @@ const AttachedImage = ({ complaintData }: AttachedImageProps) => {
 
     useEffect(() => {
         if (hasImage) {
-            const getPresignedUrl = async () => {
+            const getPresignedUrlFunc = async () => {
                 setLoading(true);
                 try {
-                    const url = await createPresignedUrl(complaintData.S3_url);
+                    const url = await getPresignedUrl(complaintData.S3_url);
                     setPresignedUrl(url);
                 } catch (error) {
                     console.error('Presigned URL 생성 실패:', error);
@@ -34,7 +35,7 @@ const AttachedImage = ({ complaintData }: AttachedImageProps) => {
                     setLoading(false);
                 }
             };
-            getPresignedUrl();
+            getPresignedUrlFunc();
         }
     }, [complaintData.S3_url, hasImage]);
 
