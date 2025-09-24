@@ -5,28 +5,29 @@ import DiagnosisCard from '../features/ai-diagnosis/components/DiagnosisCard';
 import ArEchoMap from '../features/ai-diagnosis/components/ArEchoMap';
 import { useAiSummary } from '@/features/dashboard/hooks/useDashboardData';
 import { Spinner } from '@/components/common/Spinner';
+import { getComplaintsList } from '@/api';
 
-// API에서 민원 데이터를 가져오는 함수
-const fetchComplaintsList = async () => {
-  try {
-    const response = await fetch('http://localhost:3000/complaints/complaints-list', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+// API에서 민원 데이터를 가져오는 함수 -> complaintsAPI.ts로 이동
+// const fetchComplaintsList = async () => {
+//   try {
+//     const response = await fetch('http://localhost:3000/complaints/complaints-list', {
+//       method: 'GET',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    console.log(response);
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('민원 데이터를 가져오는 중 오류 발생:', error);
-    throw error;
-  }
-};
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! status: ${response.status}`);
+//     }
+//     console.log(response);
+//     const data = await response.json();
+//     return data;
+//   } catch (error) {
+//     console.error('민원 데이터를 가져오는 중 오류 발생:', error);
+//     throw error;
+//   }
+// };
 
 // 민원 데이터를 DiagnosisCard 형식으로 변환하는 함수
 const transformComplaintToDiagnosis = (complaint: any, index: number) => {
@@ -76,7 +77,7 @@ const AiDiagnosisPage = () => {
         setComplaintsError(null);
       
       try {
-        const data = await fetchComplaintsList();
+        const data = await getComplaintsList();
         setComplaintsData(data);
       } catch (err) {
         setComplaintsError('민원 데이터를 불러오는데 실패했습니다.');

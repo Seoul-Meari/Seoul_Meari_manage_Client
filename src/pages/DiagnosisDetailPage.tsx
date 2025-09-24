@@ -4,13 +4,14 @@ import AttachedImage from '../features/diagnosis-detail/components/AttachedImage
 import QuickActions from '../features/diagnosis-detail/components/QuickActions';
 import DiagnosisInfo from '../features/diagnosis-detail/components/DiagnosisInfo';
 import AiAnalysisResult from '../features/diagnosis-detail/components/AiAnalysisResult';
+import { getComplaintById } from '@/api';
 
-const fetchComplaintData = async (id: string) => {
-    const response = await fetch(`http://localhost:3000/complaints/complaints-list/${id}`);
-    const data = await response.json();
-    console.log(data);
-    return data;
-};
+// const fetchComplaintData = async (id: string) => {
+//     const response = await fetch(`http://localhost:3000/complaints/complaints-list/${id}`);
+//     const data = await response.json();
+//     console.log(data);
+//     return data;
+// };
 
 const DiagnosisDetailPage = () => {
     const { id } = useParams();
@@ -19,7 +20,7 @@ const DiagnosisDetailPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await fetchComplaintData(id as string);
+                const data = await getComplaintById(id as string);
                 setComplaintData(data);
                 console.log('로드된 데이터:', data);
             } catch (error) {
