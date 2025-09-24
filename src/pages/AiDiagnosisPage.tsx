@@ -3,8 +3,6 @@ import AiStatCard from '../features/ai-diagnosis/components/AiStatCard';
 import FilterPanel, { StatusType, SortByType } from '../features/ai-diagnosis/components/FilterPanel';
 import DiagnosisCard from '../features/ai-diagnosis/components/DiagnosisCard';
 import ArEchoMap from '../features/ai-diagnosis/components/ArEchoMap';
-import DistrictStat from '../features/ai-diagnosis/components/DistrictStat';
-import MapLegend from '../features/ai-diagnosis/components/MapLegend';
 import { useAiSummary } from '@/features/dashboard/hooks/useDashboardData';
 import { Spinner } from '@/components/common/Spinner';
 
@@ -116,14 +114,6 @@ const AiDiagnosisPage = () => {
     { title: '미처리', value: summaryData.pending.count.toLocaleString(), change: `+${summaryData.pending.change.toLocaleString()}`, icon: <ClockIcon />, iconBgColor: 'bg-yellow-100 text-yellow-600' },
     { title: '처리', value: summaryData.resolved.count.toLocaleString(), change: `+${summaryData.resolved.change.toLocaleString()}`, icon: <CheckCircleIcon />, iconBgColor: 'bg-green-100 text-green-600' },
   ] : [];
-
-  const districtData = [
-      { district: '강남구', active: 15, total: 42 },
-      { district: '종로구', active: 23, total: 67 },
-      { district: '마포구', active: 18, total: 55 },
-      { district: '서초구', active: 12, total: 38 },
-      { district: '용산구', active: 20, total: 51 },
-  ]
 
   return (
     <div className="space-y-8">

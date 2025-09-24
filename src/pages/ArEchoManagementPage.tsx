@@ -171,7 +171,7 @@ const ArEchoManagementPage = () => {
                 </div>
             ) : (
                 <div className="space-y-6">
-                    <ArEchoMap />
+                    <ArEchoMap complaints={filteredData} />
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {districtData.map(data => <DistrictStat key={data.district} {...data} />)}
                     </div>

@@ -26,7 +26,7 @@ const Tag: React.FC<{ children: React.ReactNode; className?: string }> = ({ chil
 );
 
 const DiagnosisCard: React.FC<DiagnosisCardProps> = (props) => {
-  const { id, title, description, timestamp, location, confidence, status, image } = props;
+  const { id, title, description, timestamp, location, confidence, status } = props;
   const colors = getStatusColor(status);
 
   return (

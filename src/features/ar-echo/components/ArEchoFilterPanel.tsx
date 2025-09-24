@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import CustomDropdown from '@/components/common/CustomDropdown';
+import React from 'react';
 
 type ViewType = 'list' | 'map';
 
