@@ -5,6 +5,8 @@ import DiagnosisCard from '../features/ai-diagnosis/components/DiagnosisCard';
 import ArEchoMap from '../features/ai-diagnosis/components/ArEchoMap';
 import DistrictStat from '../features/ai-diagnosis/components/DistrictStat';
 import MapLegend from '../features/ai-diagnosis/components/MapLegend';
+import { useAiSummary } from '@/features/dashboard/hooks/useDashboardData';
+import { Spinner } from '@/components/common/Spinner';
 
 // API에서 민원 데이터를 가져오는 함수
 const fetchComplaintsList = async () => {
@@ -62,39 +64,35 @@ const transformComplaintToDiagnosis = (complaint: any, index: number) => {
 const AiDiagnosisPage = () => {
   const [view, setView] = useState<'list' | 'map'>('list');
   const [complaintsData, setComplaintsData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data: summaryData, isLoading: isSummaryLoading, isError: isSummaryError } = useAiSummary();
+  const [complaintsLoading, setComplaintsLoading] = useState(false);
+  const [complaintsError, setComplaintsError] = useState<string | null>(null);
 
   // 민원 데이터 가져오기
   useEffect(() => {
     const loadComplaintsData = async () => {
-      setLoading(true);
-      setError(null);
+        setComplaintsLoading(true);
+        setComplaintsError(null);
       
       try {
         const data = await fetchComplaintsList();
         setComplaintsData(data);
-        console.log('민원 데이터 로드 완료:', data);
       } catch (err) {
-        setError('민원 데이터를 불러오는데 실패했습니다.');
-        console.error('민원 데이터 로드 실패:', err);
+        setComplaintsError('민원 데이터를 불러오는데 실패했습니다.');
       } finally {
-        setLoading(false);
+        setComplaintsLoading(false);
       }
     };
 
     loadComplaintsData();
   }, []);
 
-  // Mock Data
-  const stats = [
-    { title: '총 진단 건수', value: '2,847', change: '+127', icon: <ChartBarIcon />, iconBgColor: 'bg-blue-100 text-blue-600' },
-    { title: '고위험 알림', value: '23', change: '+3', icon: <ExclamationTriangleIcon />, iconBgColor: 'bg-red-100 text-red-600' },
-    { title: '중위험 알림', value: '89', change: '+12', icon: <ClockIcon />, iconBgColor: 'bg-yellow-100 text-yellow-600' },
-    { title: '해결 완료', value: '2,735', change: '+98', icon: <CheckCircleIcon />, iconBgColor: 'bg-green-100 text-green-600' },
-  ];
+  const stats = summaryData ? [
+    { title: '총 진단 건수', value: summaryData.total.count.toLocaleString(), change: `+${summaryData.total.change.toLocaleString()}`, icon: <ChartBarIcon />, iconBgColor: 'bg-blue-100 text-blue-600' },
+    { title: '미처리', value: summaryData.pending.count.toLocaleString(), change: `+${summaryData.pending.change.toLocaleString()}`, icon: <ClockIcon />, iconBgColor: 'bg-yellow-100 text-yellow-600' },
+    { title: '처리', value: summaryData.resolved.count.toLocaleString(), change: `+${summaryData.resolved.change.toLocaleString()}`, icon: <CheckCircleIcon />, iconBgColor: 'bg-green-100 text-green-600' },
+  ] : [];
 
-  
   const districtData = [
       { district: '강남구', active: 15, total: 42 },
       { district: '종로구', active: 23, total: 67 },
@@ -110,17 +108,23 @@ const AiDiagnosisPage = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">AI 도시 진단</h1>
           <p className="text-md text-gray-500 mt-1">실시간 위험 요소 분석 및 관리</p>
-          {loading && <p className="text-sm text-blue-600 mt-1">민원 데이터를 불러오는 중...</p>}
-          {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
         </div>
       </div>
       
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((item) => (
-          <AiStatCard key={item.title} {...item} />
-        ))}
-      </div>
+      {isSummaryLoading && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => <div key={i} className="h-24 bg-gray-200 rounded-lg animate-pulse" />)}
+        </div>
+      )}
+      {isSummaryError && <div className="text-red-500">통계 정보를 불러오는데 실패했습니다.</div>}
+      {summaryData && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {stats.map((item) => (
+            <AiStatCard key={item.title} {...item} />
+          ))}
+        </div>
+      )}
       
       {/* Filter Panel */}
       <FilterPanel activeView={view} onViewChange={setView} />
@@ -146,7 +150,11 @@ const AiDiagnosisPage = () => {
       {view === 'list' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* 민원 데이터 표시 */}
-          {complaintsData.length > 0 ? (
+          {complaintsLoading ? (
+            <div className="col-span-2 flex justify-center py-12"><Spinner /></div>
+          ) : complaintsError ? (
+            <div className="col-span-2 text-center py-12 text-red-500">{complaintsError}</div>
+          ) : complaintsData.length > 0 ? (
             complaintsData.map((complaint, index) => {
               const transformedData = transformComplaintToDiagnosis(complaint, index);
               return (
@@ -179,7 +187,6 @@ const AiDiagnosisPage = () => {
 
 // Icons (ensure all necessary icons are here)
 const ChartBarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>;
-const ExclamationTriangleIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>;
 const ClockIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const CheckCircleIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 
