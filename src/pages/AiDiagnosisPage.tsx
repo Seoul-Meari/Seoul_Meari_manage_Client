@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import AiStatCard from '../features/ai-diagnosis/components/AiStatCard';
-import FilterPanel from '../features/ai-diagnosis/components/FilterPanel';
+import FilterPanel, { StatusType, SortByType } from '../features/ai-diagnosis/components/FilterPanel';
 import DiagnosisCard from '../features/ai-diagnosis/components/DiagnosisCard';
 import ArEchoMap from '../features/ai-diagnosis/components/ArEchoMap';
 import DistrictStat from '../features/ai-diagnosis/components/DistrictStat';
@@ -68,6 +68,9 @@ const AiDiagnosisPage = () => {
   const [complaintsLoading, setComplaintsLoading] = useState(false);
   const [complaintsError, setComplaintsError] = useState<string | null>(null);
 
+  const [status, setStatus] = useState<StatusType>('전체 상태');
+  const [sortBy, setSortBy] = useState<SortByType>('최신순');
+
   // 민원 데이터 가져오기
   useEffect(() => {
     const loadComplaintsData = async () => {
@@ -86,6 +89,27 @@ const AiDiagnosisPage = () => {
 
     loadComplaintsData();
   }, []);
+
+  const processedData = useMemo(() => {
+    let data = [...complaintsData];
+
+    // 1. 필터링 (status)
+    if (status === '해결') {
+      data = data.filter(c => c.is_confirmed === true);
+    } else if (status === '미해결') {
+      data = data.filter(c => c.is_confirmed === false);
+    }
+
+    // 2. 정렬 (sortBy)
+    data.sort((a, b) => {
+      const dateA = new Date(a.timestamp).getTime();
+      const dateB = new Date(b.timestamp).getTime();
+      return sortBy === '최신순' ? dateB - dateA : dateA - dateB;
+    });
+
+    return data;
+  }, [complaintsData, status, sortBy]);
+
 
   const stats = summaryData ? [
     { title: '총 진단 건수', value: summaryData.total.count.toLocaleString(), change: `+${summaryData.total.change.toLocaleString()}`, icon: <ChartBarIcon />, iconBgColor: 'bg-blue-100 text-blue-600' },
@@ -127,22 +151,26 @@ const AiDiagnosisPage = () => {
       )}
       
       {/* Filter Panel */}
-      <FilterPanel activeView={view} onViewChange={setView} />
+      <FilterPanel 
+        activeView={view} 
+        onViewChange={setView}
+        status={status}
+        onStatusChange={setStatus}
+        sortBy={sortBy}
+        onSortByChange={setSortBy}
+      />
       
       {/* 민원 데이터 정보 */}
-      {complaintsData.length > 0 && (
+      {!complaintsLoading && !complaintsError && (
         <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-blue-900">
-              민원 데이터 ({complaintsData.length}건) 로드 완료
+              {status} 민원 ({processedData.length}건)
             </h3>
             <span className="text-sm text-blue-600">
-              {new Date().toLocaleTimeString()}
+              정렬: {sortBy}
             </span>
           </div>
-          <p className="text-sm text-blue-700 mt-1">
-            위의 진단 카드들이 실제 민원 데이터로 표시됩니다.
-          </p>
         </div>
       )}
 
@@ -154,8 +182,8 @@ const AiDiagnosisPage = () => {
             <div className="col-span-2 flex justify-center py-12"><Spinner /></div>
           ) : complaintsError ? (
             <div className="col-span-2 text-center py-12 text-red-500">{complaintsError}</div>
-          ) : complaintsData.length > 0 ? (
-            complaintsData.map((complaint, index) => {
+          ) : processedData.length > 0 ? (
+            processedData.map((complaint, index) => {
               const transformedData = transformComplaintToDiagnosis(complaint, index);
               return (
                 <DiagnosisCard 
@@ -173,11 +201,7 @@ const AiDiagnosisPage = () => {
         </div>
       ) : (
         <div className="space-y-6">
-            <ArEchoMap />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {districtData.map(data => <DistrictStat key={data.district} {...data} />)}
-            </div>
-            <MapLegend />
+            <ArEchoMap complaints={processedData} />
         </div>
       )}
     </div>

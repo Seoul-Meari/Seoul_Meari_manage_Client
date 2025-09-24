@@ -1,17 +1,33 @@
 import DashboardStatCard from '../features/dashboard/components/DashboardStatCard';
 import { WeeklyDiagnosisChart, RiskDistributionChart } from '../features/dashboard/components/Charts';
 import HourlyActivityChart from '../features/dashboard/components/HourlyActivityChart';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import CustomDropdown from '@/components/common/CustomDropdown';
 import { useDashboardSummary } from '@/features/dashboard/hooks/useDashboardData';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 type Tab = '진단 분석' | '사용량 분석';
 
 const DashboardPage = () => {
     const [activeTab, setActiveTab] = useState<Tab>('진단 분석');
-    const [dateRange, setDateRange] = useState('7일');
-    const dateRangeOptions = ['7일', '30일', '90일'];
     const { data: summaryData, isLoading: isSummaryLoading, isError: isSummaryError } = useDashboardSummary();
+    const dashboardRef = useRef<HTMLDivElement>(null);
+
+    const handleExportPDF = () => {
+        if (!dashboardRef.current) return;
+
+        html2canvas(dashboardRef.current, { scale: 2 }).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'px',
+                format: [canvas.width, canvas.height],
+            });
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save('dashboard-report.pdf');
+        });
+    };
 
     const formatChangeRate = (rate: number) => {
         const sign = rate > 0 ? '+' : '';
@@ -67,39 +83,37 @@ const DashboardPage = () => {
                     <p className="text-md text-gray-500 mt-1">데이터 분석 및 인사이트</p>
                 </div>
                 <div className="flex items-center space-x-2 mt-4 md:mt-0">
-                    <div className="w-28">
-                        <CustomDropdown options={dateRangeOptions} value={dateRange} onChange={setDateRange} />
-                    </div>
-                    <button className="flex items-center px-4 py-2 bg-white border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50">
+                    <button onClick={handleExportPDF} className="flex items-center px-4 py-2 bg-white border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50">
                         <DownloadIcon /> <span className="ml-2">내보내기</span>
                     </button>
                 </div>
             </div>
+            <div ref={dashboardRef}>
+                {/* 통계 카드 */}
+                {isSummaryLoading && (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                        {[...Array(3)].map((_, i) => <div key={i} className="h-28 bg-gray-200 rounded-lg animate-pulse" />)}
+                    </div>
+                )}
+                {isSummaryError && <div className="text-red-500">통계 정보를 불러오는데 실패했습니다.</div>}
+                {summaryData && (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+                        {stats.map((item) => (
+                            <DashboardStatCard key={item.title} {...item} />
+                        ))}
+                    </div>
+                )}
 
-            {/* 통계 카드 */}
-            {isSummaryLoading && (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {[...Array(3)].map((_, i) => <div key={i} className="h-28 bg-gray-200 rounded-lg animate-pulse" />)}
+                {/* Tabs */}
+                <div className="bg-gray-100 p-1 rounded-lg flex space-x-1">
+                    <TabButton tabName="진단 분석" />
+                    <TabButton tabName="사용량 분석" />
                 </div>
-            )}
-            {isSummaryError && <div className="text-red-500">통계 정보를 불러오는데 실패했습니다.</div>}
-            {summaryData && (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {stats.map((item) => (
-                        <DashboardStatCard key={item.title} {...item} />
-                    ))}
+
+                {/* Main Content based on Tab */}
+                <div className="mt-8">
+                    {renderContent()}
                 </div>
-            )}
-
-            {/* Tabs */}
-            <div className="bg-gray-100 p-1 rounded-lg flex space-x-1">
-                <TabButton tabName="진단 분석" />
-                <TabButton tabName="사용량 분석" />
-            </div>
-
-            {/* Main Content based on Tab */}
-            <div>
-                {renderContent()}
             </div>
         </div>
     );
