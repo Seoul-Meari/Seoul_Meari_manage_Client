@@ -48,7 +48,7 @@ interface ArEchoCardProps {
     };
 
 const ArEchoCard: React.FC<ArEchoCardProps> = (props) => {
-    const { id, writer, content, createdAt, location, image_key } = props;
+    const { id, writer, content, createdAt, location } = props;
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 

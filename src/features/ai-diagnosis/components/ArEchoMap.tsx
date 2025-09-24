@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import seoulMap from '@/assets/map_0.png';
 
 interface ArEchoMapProps {

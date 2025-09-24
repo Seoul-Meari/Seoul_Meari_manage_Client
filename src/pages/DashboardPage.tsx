@@ -2,7 +2,6 @@ import DashboardStatCard from '../features/dashboard/components/DashboardStatCar
 import { WeeklyDiagnosisChart, RiskDistributionChart } from '../features/dashboard/components/Charts';
 import HourlyActivityChart from '../features/dashboard/components/HourlyActivityChart';
 import { useState, useRef } from 'react';
-import CustomDropdown from '@/components/common/CustomDropdown';
 import { useDashboardSummary } from '@/features/dashboard/hooks/useDashboardData';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -17,7 +16,7 @@ const DashboardPage = () => {
     const handleExportPDF = () => {
         if (!dashboardRef.current) return;
 
-        html2canvas(dashboardRef.current, { scale: 2 }).then((canvas) => {
+        html2canvas(dashboardRef.current, { scale: 2 }).then((canvas: HTMLCanvasElement) => {
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF({
                 orientation: 'landscape',
