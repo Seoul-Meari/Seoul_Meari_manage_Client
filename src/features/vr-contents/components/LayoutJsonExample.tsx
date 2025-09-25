@@ -1,33 +1,27 @@
 // src/components/vr/LayoutJsonExample.tsx
-import React, { useMemo, useState } from 'react';
-
-type ExampleCase = 'camel' | 'snake';
+import React, { useMemo } from 'react';
 
 export interface LayoutJsonExampleProps {
   title?: string;
   description?: string;
   // 예시 JSON 객체를 반환하는 빌더(부모 컴포넌트에서 placement_groups 중심으로 제공)
   dataBuilder: () => unknown;
-  initialCase?: ExampleCase;
   className?: string;
 }
 
-// --------- 유틸: 키 변환 (deep) ----------
-const toSnake = (s: string) =>
-  s.replace(/([A-Z])/g, '_$1').replace(/__/g, '_').toLowerCase();
-
+// --------- 유틸: 키 변환 (camel only) ----------
 const toCamel = (s: string) =>
   s.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
 
-function transformKeysDeep(obj: any, target: 'snake' | 'camel'): any {
+function transformKeysDeep(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.map((v) => transformKeysDeep(v, target));
+    return obj.map((v) => transformKeysDeep(v));
   }
   if (obj && typeof obj === 'object') {
     const out: Record<string, any> = {};
     Object.keys(obj).forEach((k) => {
-      const newKey = target === 'snake' ? toSnake(k) : toCamel(k);
-      out[newKey] = transformKeysDeep(obj[k], target);
+      const newKey = toCamel(k);
+      out[newKey] = transformKeysDeep(obj[k]);
     });
     return out;
   }
@@ -39,16 +33,13 @@ const LayoutJsonExample: React.FC<LayoutJsonExampleProps> = ({
   title = '레이아웃 JSON 예시',
   description = '',
   dataBuilder,
-  initialCase = 'snake',
   className = '',
 }) => {
-  const [exampleCase, setExampleCase] = useState<ExampleCase>(initialCase);
-
   const exampleJson = useMemo(() => {
     const raw = dataBuilder();
-    const transformed = transformKeysDeep(raw, exampleCase);
+    const transformed = transformKeysDeep(raw);
     return JSON.stringify(transformed, null, 2);
-  }, [dataBuilder, exampleCase]);
+  }, [dataBuilder]);
 
   const handleCopy = async () => {
     try {
@@ -62,7 +53,7 @@ const LayoutJsonExample: React.FC<LayoutJsonExampleProps> = ({
   const handleDownload = () => {
     const blob = new Blob([exampleJson], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const filename = `layout_example_groups_${exampleCase}.json`;
+    const filename = `layout_example_groups_camel.json`;
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
@@ -78,35 +69,6 @@ const LayoutJsonExample: React.FC<LayoutJsonExampleProps> = ({
           <p className="text-xs text-gray-600">{description}</p>
         </div>
         <div className="flex items-center gap-2">
-          {/* case switch */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-600">표기 방식:</span>
-            <div className="inline-flex">
-              <button
-                type="button"
-                onClick={() => setExampleCase('snake')}
-                className={`px-3 py-1 text-xs ${
-                  exampleCase === 'snake'
-                    ? 'font-semibold text-gray-900'
-                    : 'text-gray-600 hover:font-semibold'
-                }`}
-              >
-                snake_case
-              </button>
-              <button
-                type="button"
-                onClick={() => setExampleCase('camel')}
-                className={`px-3 py-1 text-xs ${
-                  exampleCase === 'camel'
-                    ? 'font-semibold text-gray-900'
-                    : 'text-gray-600 hover:font-semibold'
-                }`}
-              >
-                camelCase
-              </button>
-            </div>
-          </div>
-          {/* actions */}
           <button
             type="button"
             onClick={handleCopy}

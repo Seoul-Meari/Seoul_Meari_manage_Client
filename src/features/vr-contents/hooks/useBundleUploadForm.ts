@@ -142,13 +142,13 @@ export function useBundleUploadForm(onSubmit: (payload: BundleFinalizePayload) =
     // 상태
     mainManifest, assetBundle, layoutFile,
     name, version, usage, os, tags, description,
-    latitude, longitude, altitude: altitude, // NEW
+    latitude, longitude, altitude, // NEW
     isUploading, error, showExample,
 
     // setter
     setMainManifest, setAssetBundle, setLayoutFile,
     setName, setVersion, setUsage, setOs, setTags, setDescription,
-    setLatitude, setLongitude, setAltitude: setAltitude, // NEW
+    setLatitude, setLongitude, setAltitude, // NEW
     setShowExample,
 
     // 핸들러

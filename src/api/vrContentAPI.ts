@@ -107,7 +107,9 @@ export async function getBundles(
  */
 export async function finalizeBundleUpload(payload: FormData) {
   try {
-    const { data } = await axiosInstance.post('/bundles/finalize-upload', payload);
+    const { data } = await axiosInstance.post('/bundles/finalize-upload', payload, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
     return data;
   } catch (err) {
     const msg = (err as any)?.response?.data?.message ?? '번들 최종 등록에 실패했습니다.';

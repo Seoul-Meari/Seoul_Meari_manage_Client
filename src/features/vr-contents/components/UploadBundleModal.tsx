@@ -15,13 +15,13 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
     // 상태
     mainManifest, assetBundle, layoutFile,
     name, version, usage, os, tags, description,
-    latitude, longitude, altitude,                 // ✅ NEW
+    latitude, longitude, altitude,
     isUploading, error, showExample,
 
     // setter
     setMainManifest, setAssetBundle, setLayoutFile,
     setName, setVersion, setUsage, setOs, setTags, setDescription,
-    setLatitude, setLongitude, setAltitude,        // ✅ NEW
+    setLatitude, setLongitude, setAltitude,
     setShowExample,
 
     handleSubmit, handleClose,
@@ -78,7 +78,7 @@ const UploadBundleModal: React.FC<UploadBundleModalProps> = ({ isOpen, onClose, 
         </div>
 
         {showExample && (
-          <LayoutJsonExample dataBuilder={buildExampleLayout} initialCase="snake" />
+          <LayoutJsonExample dataBuilder={buildExampleLayout} />
         )}
 
         <div className="flex justify-end gap-3 pt-4 border-t">
