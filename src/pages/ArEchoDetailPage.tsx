@@ -1,6 +1,7 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { deleteEcho, getEchoById, getPresignedUrl } from '@/api';
+import { deleteEcho, getEchoById } from '@/api';
+import { getPresignedUrl } from '@/api/s3API';
 
 // const fetchEchoData = async (id: string) => {
 //     const response = await fetch(`http://localhost:3000/echo/echo-list/${id}`);
