@@ -1,5 +1,5 @@
+import { getPresignedUrl } from '@/api/s3API';
 import { useState, useEffect } from 'react';
-import { getPresignedUrl } from '@/api';
 
 interface AttachedImageProps {
     complaintData: any;
