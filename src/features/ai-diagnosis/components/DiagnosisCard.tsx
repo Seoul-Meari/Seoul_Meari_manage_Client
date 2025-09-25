@@ -1,4 +1,5 @@
-import React from 'react';
+import { resolveComplaint } from '@/api';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 type Status = '대기' | '해결됨';
@@ -26,8 +27,30 @@ const Tag: React.FC<{ children: React.ReactNode; className?: string }> = ({ chil
 );
 
 const DiagnosisCard: React.FC<DiagnosisCardProps> = (props) => {
-  const { id, title, description, timestamp, location, confidence, status } = props;
+  const { id, title, description, timestamp, location, confidence } = props;
+  const [status, setStatus] = useState<Status>(props.status);
+  const [loading, setLoading] = useState(false);
   const colors = getStatusColor(status);
+
+  const handleResolve = async () => {
+    if (status === '해결됨' || loading) return;
+    setLoading(true);
+
+    // 낙관적 업데이트
+    const prev = status;
+    setStatus('해결됨');
+
+    try {
+      await resolveComplaint(id);
+    } catch (e) {
+      // 실패 시 롤백
+      setStatus(prev);
+      console.error(e);
+      alert('상태 변경에 실패했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={`p-5 rounded-lg border ${colors.bg} ${colors.border}`}>
@@ -59,8 +82,13 @@ const DiagnosisCard: React.FC<DiagnosisCardProps> = (props) => {
         <Link to={`/ai-diagnosis/${id}`} className="px-4 py-2 text-sm font-semibold bg-white border border-gray-300 rounded-md hover:bg-gray-50 flex items-center">
           <EyeIcon /> <span className="ml-2">상세보기</span>
         </Link>
-        <button className="px-4 py-2 text-sm font-semibold text-white bg-teal-500 rounded-md hover:bg-teal-600 flex items-center">
-          <CheckIcon /> <span className="ml-2">해결완료</span>
+        <button
+          onClick={handleResolve}
+          disabled={status === '해결됨' || loading}
+          className={`px-4 py-2 text-sm font-semibold text-white rounded-md flex items-center
+            ${status === '해결됨' ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-600'}`}
+        >
+          <CheckIcon /> <span className="ml-2">{loading ? '처리 중...' : '해결완료'}</span>
         </button>
       </div>
     </div>
