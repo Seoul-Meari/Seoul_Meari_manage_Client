@@ -5,6 +5,7 @@ import ArEchoFilterPanel from '../features/ar-echo/components/ArEchoFilterPanel'
 import ArEchoCard from '../features/ar-echo/components/ArEchoCard';
 import { Spinner } from '@/components/common/Spinner';
 import seoulMap from '@/assets/map_0.png';
+import Pagination from '@/components/common/Pagination';
 
 // ==================================================================================
 // AR 메아리 페이지만을 위한 독립적인 지도 컴포넌트
@@ -91,6 +92,9 @@ const ArEchoManagementPage = () => {
     const [view, setView] = useState<'list' | 'map'>('list');
     const [echoData, setEchoData] = useState<any[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
+    const [page, setPage] = useState(1);
+    const [limit] = useState(500);
+    const [meta, setMeta] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -99,8 +103,9 @@ const ArEchoManagementPage = () => {
             setLoading(true);
             setError(null);
             try {
-                const data = await getEchoList();
-                setEchoData(data || []);
+                const data = await getEchoList({ page, limit, search: searchTerm });
+                setEchoData(data.items || []);
+                setMeta(data.meta);
             } catch (err) {
                 setError('메아리 데이터를 불러오는데 실패했습니다.');
             } finally {
@@ -108,80 +113,120 @@ const ArEchoManagementPage = () => {
             }
         };
         loadEchoData();
-    }, []);
+    }, [page, limit, searchTerm]);
 
-    const filteredEchos = useMemo(() => {
-        return echoData
-            .filter(echo =>
-                (echo.content?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-                (echo.writer?.toLowerCase() || '').includes(searchTerm.toLowerCase())
-            )
-            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }, [echoData, searchTerm]);
-    
     const mapData = useMemo(() => {
-        return filteredEchos
-            .map(echo => ({
-                id: echo.id,
-                latitude: echo.location?.coordinates?.[1],
-                longitude: echo.location?.coordinates?.[0],
-            }))
-            .filter(echo => echo.latitude != null && echo.longitude != null);
-    }, [filteredEchos]);
+    return echoData
+      .map((echo) => ({
+        id: echo.id,
+        latitude: echo.location?.coordinates?.[1],
+        longitude: echo.location?.coordinates?.[0],
+      }))
+      .filter((e) => e.latitude != null && e.longitude != null);
+  }, [echoData]);
 
-    const todayCreatedCount = useMemo(() => {
-        const today = new Date().toISOString().split('T')[0];
-        return echoData.filter(item => {
-            const itemDate = new Date(item.createdAt);
-            return item.createdAt && !isNaN(itemDate.getTime()) && itemDate.toISOString().split('T')[0] === today;
-        }).length;
-    }, [echoData]);
+  const todayCreatedCount = meta?.todayCount ?? 0;
 
-    const stats = [
-        { title: '총 메아리', value: echoData.length.toString(), change: `+${todayCreatedCount}`, icon: <CollectionIcon />, iconBgColor: 'bg-green-100 text-green-600' },
-        { title: '위치 있는 메아리', value: mapData.length.toString(), change: '', icon: <LocationMarkerIcon />, iconBgColor: 'bg-teal-100 text-teal-600' },
-        { title: '신고된 메아리', value: '0', change: '', icon: <ExclamationCircleIcon />, iconBgColor: 'bg-red-100 text-red-600' },
-        { title: '오늘 생성', value: todayCreatedCount.toString(), change: ``, icon: <CalendarIcon />, iconBgColor: 'bg-orange-100 text-orange-600' },
-    ];
+  const stats = [
+    {
+      title: '총 메아리',
+      value: (meta?.total ?? 0).toString(),
+      change: `+${todayCreatedCount}`,
+      icon: <CollectionIcon />,
+      iconBgColor: 'bg-green-100 text-green-600',
+    },
+    {
+      title: '위치 있는 메아리',
+      value: mapData.length.toString(),
+      change: '',
+      icon: <LocationMarkerIcon />,
+      iconBgColor: 'bg-teal-100 text-teal-600',
+    },
+    {
+      title: '신고된 메아리',
+      value: '0',
+      change: '',
+      icon: <ExclamationCircleIcon />,
+      iconBgColor: 'bg-red-100 text-red-600',
+    },
+    {
+      title: '오늘 생성',
+      value: todayCreatedCount.toString(),
+      change: ``,
+      icon: <CalendarIcon />,
+      iconBgColor: 'bg-orange-100 text-orange-600',
+    },
+  ];
 
-    return (
-        <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900">AR 메아리 관리</h1>
-                <p className="text-md text-gray-500 mt-1">사용자가 생성한 AR 콘텐츠 관리</p>
-            </div>
+  const onSearchChange = (v: string) => {
+    setPage(1);
+    setSearchTerm(v);
+  };
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {stats.map((item) => <AiStatCard key={item.title} {...item} />)}
-            </div>
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">AR 메아리 관리</h1>
+        <p className="text-md text-gray-500 mt-1">사용자가 생성한 AR 콘텐츠 관리</p>
+      </div>
 
-            <ArEchoFilterPanel
-                activeView={view}
-                onViewChange={setView}
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-            />
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((item) => (
+          <AiStatCard key={item.title} {...item} />
+        ))}
+      </div>
 
-            {loading && <div className="flex justify-center py-12"><Spinner /></div>}
-            {error && <div className="text-center py-12 text-red-500">{error}</div>}
+      <ArEchoFilterPanel
+        activeView={view}
+        onViewChange={setView}
+        searchTerm={searchTerm}
+        onSearchChange={onSearchChange}
+      />
 
-            {!loading && !error && (
-                view === 'list' ? (
-                    <div className="grid grid-cols-1 gap-4">
-                        {filteredEchos.length > 0 ? (
-                            filteredEchos.map(echo => <ArEchoCard key={echo.id} {...echo} />)
-                        ) : (
-                            <div className="col-span-full text-center py-12">
-                                <p className="text-gray-500 text-lg">{searchTerm ? '검색 결과가 없습니다.' : '표시할 메아리가 없습니다.'}</p>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <EchoMap echos={mapData} />
-                )
+                  {meta && meta.pageCount > 1 && (
+              <Pagination
+                page={meta.page}
+                pageCount={meta.pageCount}
+                onChange={(next) => setPage(next)}
+              />
             )}
+
+      {loading && (
+        <div className="flex justify-center py-12">
+          <Spinner />
         </div>
-    );
+      )}
+      {error && <div className="text-center py-12 text-red-500">{error}</div>}
+
+      {!loading && !error && (
+        <>
+          {view === 'list' ? (
+            <div className="space-y-4">
+              {echoData.length > 0 ? (
+                echoData.map((echo) => <ArEchoCard key={echo.id} {...echo} />)
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-gray-500 text-lg">
+                    {searchTerm ? '검색 결과가 없습니다.' : '표시할 메아리가 없습니다.'}
+                  </p>
+                </div>
+              )}
+
+            {meta && meta.pageCount > 1 && (
+              <Pagination
+                page={meta.page}
+                pageCount={meta.pageCount}
+                onChange={(next) => setPage(next)}
+              />
+            )}
+            </div>
+          ) : (
+            <EchoMap echos={mapData} />
+          )}
+        </>
+      )}
+    </div>
+  );
 };
 
 // ==================================================================================
