@@ -84,9 +84,9 @@ const ArEchoDetailPage = () => {
                 console.log('로드된 데이터:', data);
                 
                 // image_key가 있으면 presigned URL로 변환
-                if (data?.image_key) {
+                if (data?.imageKey) {
                     try {
-                        const presignedUrl = await getPresignedUrl(data.image_key);
+                        const presignedUrl = await getPresignedUrl(data.imageKey);
                         setImageUrl(presignedUrl);
                     } catch (error) {
                         console.error('이미지 URL 변환 실패:', error);
