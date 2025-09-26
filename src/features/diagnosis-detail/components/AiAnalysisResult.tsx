@@ -7,13 +7,13 @@ const AiAnalysisResult = ({ complaintData }: AiAnalysisResultProps) => {
     const getAnalysisData = (tag: string) => {
         console.log(tag);
         const analysisMap: { [key: string]: any } = {
-            'porthole': {
-                objects: ['도로', '구멍', '아스팔트'],
+            'slp': {
+                objects: ['종이', '비닐봉투', '쓰레기'],
                 risks: ['차량 안전 위험', '보행자 위험', '교통 지연'],
                 recommendations: ['긴급 보수', '교통 통제', '정기 점검']
             },
-            'trashbag': {
-                objects: ['쓰레기', '쓰레기통', '쓰레기봉투'],
+            'sld': {
+                objects: ['페트병', '무단 투기', '캔'],
                 risks: ['시각적 피해', '재산 손상', '환경 오염'],
                 recommendations: ['제거 작업', '감시 강화', '예방 조치']
             }
